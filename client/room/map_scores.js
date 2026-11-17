@@ -7,7 +7,7 @@ const SCORES_PROP_NAME = "Scores";           // имя свойства очко
 const ENEMY_BLOCK_SCORE = 25;                // очки за разрушение 1 вражеского блока
 const MAP_BLOCK_SCORE = 1;                   // очки за разрушение 1 блока карты
 const PLACE_BLOCK_SCORE = 5;                 // очки за постановку блока/линии
-// корневые ID блоков команд
+// корневые ID блоков коман
 const RED_TEAM_ROOT_BLOCK_ID = 33;           // корневой блок красной команды
 const BLUE_TEAM_ROOT_BLOCK_ID = 28;          // корневой блок синей команды
 
