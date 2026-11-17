@@ -185,12 +185,42 @@ function SetTacticalPreparation() {
     SpawnTeams();
 }
 
-// ПРОВЕРКА ЧАТ-КОМАНДЫ
+// СОЗДАНИЕ БОТА
+function CreateTestBot() {
+    Bots.PoolSize = 1;
+
+    const spawnGroup = Spawns.SpawnPoints.GetGroup(1);
+
+    if (spawnGroup == null || spawnGroup.Count === 0) {
+        return;
+    }
+
+    const spawnPoint = spawnGroup.GetRandomSpawnpoint();
+
+    if (spawnPoint == null) {
+        return;
+    }
+
+    const botPosition = spawnPoint.Position.ToVector();
+
+    const bot = Bots.CreateHuman({
+        Position: botPosition,
+        Rotation: { x: 0, y: 0 },
+        SkinId: 11
+    });
+
+    if (bot == null) {
+        return;
+    }
+}
+
+// ЧАТ-КОМАНДА
 Chat.OnMessage.Add(function(message) {
     if (message.Sender === 0) return;
 
     if (message.Text.trim() === "/bot_test") {
-        Ui.GetContext().Hint.Value = "CHAT EVENT WORKS";
+        CreateTestBot();
+        Ui.GetContext().Hint.Value = "BOT CREATION REQUESTED";
     }
 });
 
@@ -260,4 +290,4 @@ function SpawnTeams() {
 
 // ЗАПУСК
 scores_timer.RestartLoop(30);
-SetWaitingMode();   
+SetWaitingMode();
