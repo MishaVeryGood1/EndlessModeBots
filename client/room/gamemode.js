@@ -191,14 +191,18 @@ function CreateTestBot() {
 
     const spawnGroup = Spawns.SpawnPoints.GetGroup(1);
 
-    if (spawnGroup == null || spawnGroup.Count === 0) {
-        return;
+    if (spawnGroup == null) {
+        return "SPAWN GROUP NOT FOUND";
+    }
+
+    if (spawnGroup.Count === 0) {
+        return "SPAWN GROUP IS EMPTY";
     }
 
     const spawnPoint = spawnGroup.GetRandomSpawnpoint();
 
     if (spawnPoint == null) {
-        return;
+        return "SPAWN POINT NOT FOUND";
     }
 
     const botPosition = spawnPoint.Position.ToVector();
@@ -210,17 +214,26 @@ function CreateTestBot() {
     });
 
     if (bot == null) {
-        return;
+        return "CREATE HUMAN RETURNED NULL";
     }
+
+    return "CREATE HUMAN RETURNED BOT";
 }
+
+// ОТСЛЕЖИВАНИЕ НОВЫХ БОТОВ
+Bots.OnNewBot.Add(function(bot) {
+    Ui.GetContext().Hint.Value =
+        "NEW BOT REGISTERED: " + bot.Id;
+});
 
 // ЧАТ-КОМАНДА
 Chat.OnMessage.Add(function(message) {
     if (message.Sender === 0) return;
 
     if (message.Text.trim() === "/bot_test") {
-        CreateTestBot();
-        Ui.GetContext().Hint.Value = "BOT CREATION REQUESTED";
+        const result = CreateTestBot();
+
+        Ui.GetContext().Hint.Value = result;
     }
 });
 
