@@ -296,3 +296,11 @@ function SpawnTeams() {
 scores_timer.RestartLoop(30);
 
 SetWaitingMode();
+
+// ТЕСТОВЫЙ БОТ
+Bots.PoolSize = 1;
+
+const testBot = Bots.CreateHuman({
+    Position: { x: 10, y: 50, z: 10 },
+    Rotation: { x: 0, y: 0 }
+});
