@@ -2,7 +2,7 @@ import { DisplayValueHeader } from 'pixel_combats/basic';
 import * as room_lib from 'pixel_combats/room';
 
 const {
-    room, Game, Players, Bots, Inventory, LeaderBoard,
+    room, Game, Players, Bots, Chat, Inventory, LeaderBoard,
     BuildBlocksSet, Teams, Damage, BreackGraph, Ui,
     Properties, GameMode, Spawns, Timers, TeamsBalancer,
     NewGame, NewGameVote, MapEditor
@@ -214,6 +214,16 @@ function CreateTestBot() {
     }
 }
 
+// ЧАТ-КОМАНДА
+Chat.OnMessage.Add(function(message) {
+    if (message.Sender === 0) return;
+
+    if (message.Text.trim() === "/bot_test") {
+        CreateTestBot();
+        Ui.GetContext().Hint.Value = "Команда /bot_test выполнена";
+    }
+});
+
 // БЕСКОНЕЧНЫЙ МАТЧ
 function SetGameMode() {
     stateProp.Value = GameStateValue;
@@ -240,8 +250,6 @@ function SetGameMode() {
     Spawns.GetContext().Despawn();
 
     SpawnTeams();
-
-    CreateTestBot();
 
     elapsedSeconds = 0;
     Ui.GetContext().Hint.Value = "Время: 00:00:00";
