@@ -2,7 +2,7 @@ import { DisplayValueHeader } from 'pixel_combats/basic';
 import * as room_lib from 'pixel_combats/room';
 
 const {
-    room, Game, Players, Inventory, LeaderBoard,
+    room, Game, Players, Bots, Inventory, LeaderBoard,
     BuildBlocksSet, Teams, Damage, BreackGraph, Ui,
     Properties, GameMode, Spawns, Timers, TeamsBalancer,
     NewGame, NewGameVote, MapEditor
