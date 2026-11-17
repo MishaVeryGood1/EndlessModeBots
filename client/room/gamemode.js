@@ -295,4 +295,6 @@ function SpawnTeams() {
 // ЗАПУСК
 scores_timer.RestartLoop(30);
 
+Bots.PoolSize = 1;
+
 SetWaitingMode();
