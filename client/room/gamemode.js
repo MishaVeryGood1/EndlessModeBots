@@ -201,8 +201,10 @@ function CreateTestBot() {
         return;
     }
 
+    const botPosition = spawnPoint.Position.ToVector();
+
     const bot = Bots.CreateHuman({
-        Position: spawnPoint.Index.ToVector(),
+        Position: botPosition,
         Rotation: { x: 0, y: 0 },
         SkinId: 11
     });
@@ -210,11 +212,6 @@ function CreateTestBot() {
     if (bot == null) {
         return;
     }
-
-    bot.SetPositionAndDirection(
-        spawnPoint.Index.ToVector(),
-        { x: 0, y: 0, z: 1 }
-    );
 }
 
 // БЕСКОНЕЧНЫЙ МАТЧ
@@ -285,4 +282,4 @@ function SpawnTeams() {
 
 // ЗАПУСК
 scores_timer.RestartLoop(30);
-SetWaitingMode(); 
+SetWaitingMode();
