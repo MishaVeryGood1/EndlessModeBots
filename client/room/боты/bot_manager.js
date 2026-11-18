@@ -1,36 +1,48 @@
-import { Bots } from "pixel_combats/room";
+export function createBotManager(Bots) {
+    const bots = [];
 
-export const BotManager = {
-    bots: [],
+    return {
+        bots,
 
-    AddBot() {
-        Bots.PoolSize = 10;
+        AddBot(spawnData) {
+            if (!Bots) {
+                return { error: "Bots service is unavailable" };
+            }
 
-        const bot = Bots.CreateHuman({
-            Position: { x: 50, y: 50, z: 50 },
-            Rotation: { x: 0, y: 0 },
-            WeaponId: 0,
-            SkinId: 11
-        });
+            try {
+                Bots.PoolSize = 10;
 
-        if (!bot) return null;
+                const bot = Bots.CreateHuman(spawnData);
 
-        bot.Attack = false;
-        this.bots.push(bot);
+                if (!bot) {
+                    return { error: "CreateHuman returned null" };
+                }
 
-        return bot;
-    },
+                bots.push(bot);
+                return { bot };
+            } catch (error) {
+                return {
+                    error: String(error)
+                };
+            }
+        },
 
-    RemoveBot() {
-        if (this.bots.length === 0) return;
+        RemoveBot() {
+            if (bots.length === 0) return;
 
-        const bot = this.bots.pop();
-        bot.Destroy();
-    },
+            const bot = bots.pop();
 
-    ClearBots() {
-        while (this.bots.length > 0) {
-            this.RemoveBot();
+            try {
+                bot.Destroy();
+            } catch (error) {
+                return { error: String(error) };
+            }
+        },
+
+        ClearBots() {
+            while (bots.length > 0) {
+                this.RemoveBot();
+            }
         }
-    }
-};
+    };
+}
