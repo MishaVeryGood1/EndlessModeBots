@@ -5,8 +5,7 @@ const {
     room, Game, Players, Inventory, LeaderBoard,
     BuildBlocksSet, Teams, Damage, BreackGraph, Ui,
     Properties, GameMode, Spawns, Timers, TeamsBalancer,
-    NewGame, NewGameVote, MapEditor,
-    Bots, Chat
+    NewGame, NewGameVote, MapEditor, Bots, Chat
 } = room_lib;
 
 import * as teams from './default_teams.js';
@@ -38,7 +37,6 @@ Damage.GetContext().FriendlyFire.Value =
 
 BreackGraph.WeakBlocks =
     GameMode.Parameters.GetBool("LoosenBlocks");
-
 BreackGraph.OnlyPlayerBlocksDmg =
     GameMode.Parameters.GetBool("OnlyPlayerBlocksDmg");
 
@@ -248,103 +246,123 @@ function SpawnTeams() {
 }
 
 // ==================================================
-// ЭКСПЕРИМЕНТАЛЬНЫЕ БОТЫ
+// ТЕСТ БОТОВ
 // ==================================================
 
-const BOT_MAX_TEST = 5;
-
 function GetBotsList() {
-    if (!Bots || !Bots.All) return [];
-    return Bots.All;
-}
-
-function GetBotCount() {
-    return GetBotsList().length;
+    try {
+        return Bots.All;
+    } catch (e) {
+        return null;
+    }
 }
 
 function CreateTestBot() {
-    const spawnGroup = Spawns.SpawnPoints.GetGroup(1);
+    Ui.GetContext().Hint.Value = "BOT: COMMAND RECEIVED";
 
-    if (spawnGroup == null || spawnGroup.Count === 0) {
-        Ui.GetContext().Hint.Value = "BOT ERROR: NO SPAWN";
-        return;
+    try {
+        const spawnGroup = Spawns.SpawnPoints.GetGroup(1);
+
+        if (spawnGroup == null) {
+            Ui.GetContext().Hint.Value = "BOT: GROUP NOT FOUND";
+            return;
+        }
+
+        const spawnPoint = spawnGroup.GetRandomSpawnpoint();
+
+        if (spawnPoint == null) {
+            Ui.GetContext().Hint.Value = "BOT: POINT NOT FOUND";
+            return;
+        }
+
+        Bots.PoolSize = 5;
+
+        const bot = Bots.CreateHuman({
+            Position: spawnPoint.Position.ToVector(),
+            Rotation: { x: 0, y: 0 },
+            SkinId: 11
+        });
+
+        if (bot == null) {
+            Ui.GetContext().Hint.Value = "BOT: CREATE RETURNED NULL";
+            return;
+        }
+
+        Ui.GetContext().Hint.Value = "BOT: CREATE CALLED";
+
+    } catch (e) {
+        Ui.GetContext().Hint.Value = "BOT ERROR";
     }
-
-    const spawnPoint = spawnGroup.GetRandomSpawnpoint();
-
-    if (spawnPoint == null) {
-        Ui.GetContext().Hint.Value = "BOT ERROR: NO POINT";
-        return;
-    }
-
-    const botPosition = spawnPoint.Position.ToVector();
-
-    Bots.PoolSize = BOT_MAX_TEST;
-
-    const bot = Bots.CreateHuman({
-        Position: botPosition,
-        Rotation: { x: 0, y: 0 },
-        SkinId: 11
-    });
-
-    if (bot == null) {
-        Ui.GetContext().Hint.Value = "BOT CREATE FAILED";
-        return;
-    }
-
-    Ui.GetContext().Hint.Value = "BOT CREATED";
 }
 
 function RemoveOneBot() {
-    const bots = GetBotsList();
+    try {
+        const bots = GetBotsList();
 
-    if (!bots || bots.length === 0) {
-        Ui.GetContext().Hint.Value = "NO BOTS";
-        return;
+        if (bots == null || bots.length == 0) {
+            Ui.GetContext().Hint.Value = "BOT: NONE FOUND";
+            return;
+        }
+
+        bots[bots.length - 1].Destroy();
+        Ui.GetContext().Hint.Value = "BOT: REMOVE CALLED";
+
+    } catch (e) {
+        Ui.GetContext().Hint.Value = "BOT REMOVE ERROR";
     }
-
-    bots[bots.length - 1].Destroy();
-
-    Ui.GetContext().Hint.Value = "BOT REMOVED";
 }
 
 function RemoveAllBots() {
-    const bots = GetBotsList();
+    try {
+        const bots = GetBotsList();
 
-    if (!bots || bots.length === 0) {
-        Ui.GetContext().Hint.Value = "NO BOTS";
-        return;
+        if (bots == null || bots.length == 0) {
+            Ui.GetContext().Hint.Value = "BOT: NONE FOUND";
+            return;
+        }
+
+        for (const bot of bots) {
+            bot.Destroy();
+        }
+
+        Ui.GetContext().Hint.Value = "BOT: CLEAR CALLED";
+
+    } catch (e) {
+        Ui.GetContext().Hint.Value = "BOT CLEAR ERROR";
     }
-
-    for (const bot of bots) {
-        bot.Destroy();
-    }
-
-    Ui.GetContext().Hint.Value = "ALL BOTS REMOVED";
 }
 
-// КОМАНДЫ ЧАТА
+// ЧАТ
 Chat.OnMessage.Add(function(message) {
-    if (message.Sender === 0) return;
+    try {
+        if (message.Sender === 0) return;
 
-    const text = message.Text.trim();
+        const text = message.Text.trim();
 
-    if (text === "/bot_red(+1)") {
-        CreateTestBot();
-    }
-
-    if (text === "/bot_red(+5)") {
-        for (let i = 0; i < 5; i++) {
+        if (text === "/bot_red(+1)") {
             CreateTestBot();
+            return;
         }
-    }
 
-    if (text === "/bot_red(-1)") {
-        RemoveOneBot();
-    }
+        if (text === "/bot_red(+5)") {
+            for (let i = 0; i < 5; i++) {
+                CreateTestBot();
+            }
+            return;
+        }
 
-    if (text === "/bot_clear(All)") {
-        RemoveAllBots();
+        if (text === "/bot_red(-1)") {
+            RemoveOneBot();
+            return;
+        }
+
+        if (text === "/bot_clear(All)") {
+            RemoveAllBots();
+            return;
+        }
+
+    } catch (e) {
+        Ui.GetContext().Hint.Value = "CHAT COMMAND ERROR";
     }
 });
 
