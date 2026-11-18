@@ -2,7 +2,7 @@ import { DisplayValueHeader } from 'pixel_combats/basic';
 import * as room_lib from 'pixel_combats/room';
 
 const {
-    room, Game, Players, Bots, Inventory, LeaderBoard,
+    room, Game, Players, Inventory, LeaderBoard,
     BuildBlocksSet, Teams, Damage, BreackGraph, Ui,
     Properties, GameMode, Spawns, Timers, TeamsBalancer,
     NewGame, NewGameVote, MapEditor
@@ -15,7 +15,6 @@ import { addTeamScores } from './team_scores.js';
 
 room.PopupsEnable = true;
 
-// ВРЕМЯ ПОДГОТОВКИ
 const WaitingPlayersTime = 10;
 const TacticalPreparationTime = 30;
 
@@ -27,14 +26,12 @@ const TacticalPreparationStateValue = "TacticalPreparation";
 const GameStateValue = "Game";
 const immortalityTimerName = "immortality";
 
-// ТАЙМЕРЫ
 const mainTimer = Timers.GetContext().Get("Main");
 const scores_timer = Timers.GetContext().Get("Scores");
 const elapsedTimer = Timers.GetContext().Get("ElapsedClock");
 
 const stateProp = Properties.GetContext().Get("State");
 
-// ПАРАМЕТРЫ РЕЖИМА
 Damage.GetContext().FriendlyFire.Value =
     GameMode.Parameters.GetBool("FriendlyFire");
 
@@ -52,43 +49,23 @@ TeamsBalancer.IsAutoBalance = true;
 
 Ui.GetContext().MainTimerId.Value = mainTimer.Id;
 
-// СОЗДАНИЕ КОМАНД
+// КОМАНДЫ
 const blueTeam = teams.create_team_blue();
 const redTeam = teams.create_team_red();
 
 blueTeam.Build.BlocksSet.Value = BuildBlocksSet.Blue;
 redTeam.Build.BlocksSet.Value = BuildBlocksSet.Red;
 
-// ТАБЛИЦА ИГРОКОВ
+// ЛИДЕРБОРД
 LeaderBoard.PlayerLeaderBoardValues = [
-    new DisplayValueHeader(
-        KILLS_PROP_NAME,
-        "Statistics/Kills",
-        "Statistics/KillsShort"
-    ),
-    new DisplayValueHeader(
-        "Deaths",
-        "Statistics/Deaths",
-        "Statistics/DeathsShort"
-    ),
-    new DisplayValueHeader(
-        "Spawns",
-        "Statistics/Spawns",
-        "Statistics/SpawnsShort"
-    ),
-    new DisplayValueHeader(
-        SCORES_PROP_NAME,
-        "Statistics/Scores",
-        "Statistics/ScoresShort"
-    )
+    new DisplayValueHeader(KILLS_PROP_NAME, "Statistics/Kills", "Statistics/KillsShort"),
+    new DisplayValueHeader("Deaths", "Statistics/Deaths", "Statistics/DeathsShort"),
+    new DisplayValueHeader("Spawns", "Statistics/Spawns", "Statistics/SpawnsShort"),
+    new DisplayValueHeader(SCORES_PROP_NAME, "Statistics/Scores", "Statistics/ScoresShort")
 ];
 
 LeaderBoard.TeamLeaderBoardValue =
-    new DisplayValueHeader(
-        SCORES_PROP_NAME,
-        "Statistics\\Scores",
-        "Statistics\\Scores"
-    );
+    new DisplayValueHeader(SCORES_PROP_NAME, "Statistics\\Scores", "Statistics\\Scores");
 
 LeaderBoard.TeamWeightGetter.Set(function(team) {
     return team.Properties.Get(SCORES_PROP_NAME).Value;
@@ -120,7 +97,7 @@ Teams.OnPlayerChangeTeam.Add(function(player) {
     player.Spawns.Spawn();
 });
 
-// БЕССМЕРТИЕ ПОСЛЕ ВОЗРОЖДЕНИЯ
+// БЕССМЕРТИЕ
 Spawns.GetContext().OnSpawn.Add(function(player) {
     player.Properties.Immortality.Value = true;
     player.Timers.Get(immortalityTimerName).Restart(3);
@@ -128,42 +105,32 @@ Spawns.GetContext().OnSpawn.Add(function(player) {
 
 Timers.OnPlayerTimer.Add(function(timer) {
     if (timer.Id != immortalityTimerName) return;
-
     timer.Player.Properties.Immortality.Value = false;
 });
 
-// СТАТИСТИКА СПАВНОВ
+// СТАТИСТИКА
 Spawns.OnSpawn.Add(function(player) {
     ++player.Properties.Spawns.Value;
 });
 
-// СТАТИСТИКА СМЕРТЕЙ
 Damage.OnDeath.Add(function(player) {
     ++player.Properties.Deaths.Value;
 });
 
-// ОЧКИ ЗА УБИЙСТВА
 Damage.OnKillReport.Add(function(victim, killer, report) {
     damageScores.applyKillReportScores(victim, killer, report);
 });
 
-// ОЧКИ ЗА ИЗМЕНЕНИЕ КАРТЫ
 MapEditor.OnMapEdited.Add(function(player, details) {
-    mapScores.applyMapEditScores(
-        player,
-        details,
-        blueTeam,
-        redTeam
-    );
+    mapScores.applyMapEditScores(player, details, blueTeam, redTeam);
 });
 
-// ОЧКИ ЗА ВРЕМЯ В ИГРЕ
+// ОЧКИ ЗА ВРЕМЯ
 scores_timer.OnTimer.Add(function() {
     if (stateProp.Value !== GameStateValue) return;
 
     for (const player of Players.All) {
         if (player.Team == null) continue;
-
         player.Properties.Scores.Value += 30;
         addTeamScores(player.Team, 30);
     }
@@ -181,31 +148,24 @@ mainTimer.OnTimer.Add(function() {
             break;
 
         case GameStateValue:
-            // Матч бесконечный.
-            // Автоматическое завершение отключено.
             break;
     }
 });
 
-// ОЖИДАНИЕ ИГРОКОВ
+// ОЖИДАНИЕ
 function SetWaitingMode() {
     stateProp.Value = WaitingStateValue;
-
     Ui.GetContext().Hint.Value = "Hint/WaitingPlayers";
-
     Spawns.GetContext().enable = false;
-
     mainTimer.Restart(WaitingPlayersTime);
 }
 
 // ПОДГОТОВКА
 function SetTacticalPreparation() {
     stateProp.Value = TacticalPreparationStateValue;
-
     Ui.GetContext().Hint.Value = "Hint/TacticalPrep";
 
     const inventory = Inventory.GetContext();
-
     inventory.Main.Value = false;
     inventory.Secondary.Value = false;
     inventory.Melee.Value = true;
@@ -213,76 +173,15 @@ function SetTacticalPreparation() {
     inventory.Build.Value = true;
 
     Damage.GetContext().DamageOut.Value = true;
-
     Spawns.GetContext().RespawnTime.Value = 0;
-    mainTimer.Restart(TacticalPreparationTime);
 
+    mainTimer.Restart(TacticalPreparationTime);
     Spawns.GetContext().enable = true;
 
     SpawnTeams();
 }
 
-// ДИАГНОСТИЧЕСКОЕ СООБЩЕНИЕ
-let diagnosticMessage = "";
-let diagnosticSeconds = 0;
-
-function ShowDiagnostic(message) {
-    diagnosticMessage = message;
-    diagnosticSeconds = 5;
-    Ui.GetContext().Hint.Value = message;
-}
-
-// СОЗДАНИЕ ТЕСТОВОГО БОТА
-function CreateTestBot() {
-    Bots.PoolSize = 1;
-
-    const spawnGroup = Spawns.SpawnPoints.GetGroup(1);
-
-    if (spawnGroup == null) {
-        return "SPAWN GROUP NOT FOUND";
-    }
-
-    if (spawnGroup.Count === 0) {
-        return "SPAWN GROUP IS EMPTY";
-    }
-
-    const spawnPoint = spawnGroup.GetRandomSpawnpoint();
-
-    if (spawnPoint == null) {
-        return "SPAWN POINT NOT FOUND";
-    }
-
-    const botPosition = spawnPoint.Position.ToVector();
-
-    const bot = Bots.CreateHuman({
-        Position: botPosition,
-        Rotation: { x: 0, y: 0 },
-        SkinId: 11
-    });
-
-    if (bot == null) {
-        return "CREATE HUMAN RETURNED NULL";
-    }
-
-    return "CREATE HUMAN RETURNED BOT";
-}
-
-// СОБЫТИЕ ПОЯВЛЕНИЯ НОВОГО БОТА
-Bots.OnNewBot.Add(function() {
-    ShowDiagnostic("ON NEW BOT EVENT");
-});
-
-// КОМАНДА В ЧАТЕ
-Chat.OnMessage.Add(function(message) {
-    if (message.Sender === 0) return;
-
-    if (message.Text.trim() === "/bot_test") {
-        const result = CreateTestBot();
-        ShowDiagnostic(result);
-    }
-});
-
-// НАЧАЛО БЕСКОНЕЧНОГО МАТЧА
+// БЕСКОНЕЧНЫЙ МАТЧ
 function SetGameMode() {
     stateProp.Value = GameStateValue;
 
@@ -305,32 +204,23 @@ function SetGameMode() {
     }
 
     Spawns.GetContext().RespawnTime.Value = 0;
-
     Spawns.GetContext().Despawn();
 
     SpawnTeams();
 
-    // СЧЁТЧИК ВРЕМЕНИ
     elapsedSeconds = 0;
-
     Ui.GetContext().Hint.Value = "Время: 00:00:00";
 
     elapsedTimer.RestartLoop(1);
 }
 
-// СЧЁТЧИК ВВЕРХ
+// СЧЁТЧИК ВРЕМЕНИ
 var elapsedSeconds = 0;
 
 function UpdateElapsedClock() {
     if (stateProp.Value !== GameStateValue) return;
 
     elapsedSeconds++;
-
-    if (diagnosticSeconds > 0) {
-        Ui.GetContext().Hint.Value = diagnosticMessage;
-        diagnosticSeconds--;
-        return;
-    }
 
     const hours = Math.floor(elapsedSeconds / 3600);
     const minutes = Math.floor((elapsedSeconds % 3600) / 60);
@@ -348,7 +238,7 @@ elapsedTimer.OnTimer.Add(function() {
     UpdateElapsedClock();
 });
 
-// ВОЗРОЖДЕНИЕ КОМАНД
+// СПАВН КОМАНД
 function SpawnTeams() {
     for (const team of Teams) {
         Spawns.GetContext(team).Spawn();
@@ -357,5 +247,4 @@ function SpawnTeams() {
 
 // ЗАПУСК
 scores_timer.RestartLoop(30);
-
 SetWaitingMode();
