@@ -9,7 +9,7 @@ const {
 } = room_lib;
 
 // ПОДКЛЮЧЕНИЕ BOT MANAGER
-import { createBotManager } from './боты/bot_manager.js';
+import { createBotManager } from './bots/bot_manager.js';
 
 const BotManager = createBotManager(room_lib.Bots);
 
