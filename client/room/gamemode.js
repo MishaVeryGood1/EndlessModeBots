@@ -8,6 +8,11 @@ const {
     NewGame, NewGameVote, MapEditor
 } = room_lib;
 
+// ПОДКЛЮЧЕНИЕ BOT MANAGER
+import { createBotManager } from './боты/bot_manager.js';
+
+const BotManager = createBotManager(room_lib.Bots);
+
 import * as teams from './default_teams.js';
 import * as damageScores from './damage_scores.js';
 import * as mapScores from './map_scores.js';
