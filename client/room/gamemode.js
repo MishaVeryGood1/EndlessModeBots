@@ -5,7 +5,8 @@ const {
     room, Game, Players, Inventory, LeaderBoard,
     BuildBlocksSet, Teams, Damage, BreackGraph, Ui,
     Properties, GameMode, Spawns, Timers, TeamsBalancer,
-    NewGame, NewGameVote, MapEditor
+    NewGame, NewGameVote, MapEditor,
+    Bots, Chat
 } = room_lib;
 
 import * as teams from './default_teams.js';
@@ -37,6 +38,7 @@ Damage.GetContext().FriendlyFire.Value =
 
 BreackGraph.WeakBlocks =
     GameMode.Parameters.GetBool("LoosenBlocks");
+
 BreackGraph.OnlyPlayerBlocksDmg =
     GameMode.Parameters.GetBool("OnlyPlayerBlocksDmg");
 
@@ -244,6 +246,107 @@ function SpawnTeams() {
         Spawns.GetContext(team).Spawn();
     }
 }
+
+// ==================================================
+// ЭКСПЕРИМЕНТАЛЬНЫЕ БОТЫ
+// ==================================================
+
+const BOT_MAX_TEST = 5;
+
+function GetBotsList() {
+    if (!Bots || !Bots.All) return [];
+    return Bots.All;
+}
+
+function GetBotCount() {
+    return GetBotsList().length;
+}
+
+function CreateTestBot() {
+    const spawnGroup = Spawns.SpawnPoints.GetGroup(1);
+
+    if (spawnGroup == null || spawnGroup.Count === 0) {
+        Ui.GetContext().Hint.Value = "BOT ERROR: NO SPAWN";
+        return;
+    }
+
+    const spawnPoint = spawnGroup.GetRandomSpawnpoint();
+
+    if (spawnPoint == null) {
+        Ui.GetContext().Hint.Value = "BOT ERROR: NO POINT";
+        return;
+    }
+
+    const botPosition = spawnPoint.Position.ToVector();
+
+    Bots.PoolSize = BOT_MAX_TEST;
+
+    const bot = Bots.CreateHuman({
+        Position: botPosition,
+        Rotation: { x: 0, y: 0 },
+        SkinId: 11
+    });
+
+    if (bot == null) {
+        Ui.GetContext().Hint.Value = "BOT CREATE FAILED";
+        return;
+    }
+
+    Ui.GetContext().Hint.Value = "BOT CREATED";
+}
+
+function RemoveOneBot() {
+    const bots = GetBotsList();
+
+    if (!bots || bots.length === 0) {
+        Ui.GetContext().Hint.Value = "NO BOTS";
+        return;
+    }
+
+    bots[bots.length - 1].Destroy();
+
+    Ui.GetContext().Hint.Value = "BOT REMOVED";
+}
+
+function RemoveAllBots() {
+    const bots = GetBotsList();
+
+    if (!bots || bots.length === 0) {
+        Ui.GetContext().Hint.Value = "NO BOTS";
+        return;
+    }
+
+    for (const bot of bots) {
+        bot.Destroy();
+    }
+
+    Ui.GetContext().Hint.Value = "ALL BOTS REMOVED";
+}
+
+// КОМАНДЫ ЧАТА
+Chat.OnMessage.Add(function(message) {
+    if (message.Sender === 0) return;
+
+    const text = message.Text.trim();
+
+    if (text === "/bot_red(+1)") {
+        CreateTestBot();
+    }
+
+    if (text === "/bot_red(+5)") {
+        for (let i = 0; i < 5; i++) {
+            CreateTestBot();
+        }
+    }
+
+    if (text === "/bot_red(-1)") {
+        RemoveOneBot();
+    }
+
+    if (text === "/bot_clear(All)") {
+        RemoveAllBots();
+    }
+});
 
 // ЗАПУСК
 scores_timer.RestartLoop(30);
