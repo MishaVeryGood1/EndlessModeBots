@@ -205,7 +205,7 @@ function ClearRedBots() {
     return "Запрос на удаление всех ботов выполнен";
 }
 
-room_lib.Chat.OnMessage.Add(function(message, chat) {
+room.Chat.OnMessage.Add(function(message, chat) {
     if (!message || message.Sender === 0) return;
 
     const text = message.Text;
