@@ -10,7 +10,6 @@ const {
 
 // BOT MANAGER
 import { createBotManager } from './bots/bot_manager.js';
-
 const BotManager = createBotManager(room_lib.Bots);
 
 import * as teams from './default_teams.js';
@@ -37,6 +36,7 @@ const elapsedTimer = Timers.GetContext().Get("ElapsedClock");
 
 const stateProp = Properties.GetContext().Get("State");
 
+// НАСТРОЙКИ УРОНА
 Damage.GetContext().FriendlyFire.Value =
     GameMode.Parameters.GetBool("FriendlyFire");
 
@@ -137,12 +137,13 @@ scores_timer.OnTimer.Add(function() {
 
     for (const player of Players.All) {
         if (player.Team == null) continue;
+
         player.Properties.Scores.Value += 30;
         addTeamScores(player.Team, 30);
     }
 });
 
-// ЧАТ-КОМАНДЫ ДЛЯ БОТОВ
+// СОЗДАНИЕ КРАСНОГО БОТА
 function CreateRedBot() {
     const bots = room_lib.Bots;
 
@@ -153,74 +154,92 @@ function CreateRedBot() {
     const redSpawnGroup = Spawns.SpawnPoints.GetGroup(2);
 
     if (!redSpawnGroup) {
-        return "Не найдена группа спавна Red (2)";
+        return "Не найдена группа спавна Red";
     }
 
     const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
 
     if (!spawnPoint) {
-        return "В группе Red нет точек спавна";
+        return "Нет точек спавна Red";
     }
 
-    const result = BotManager.AddBot({
-        Position: {
-            x: spawnPoint.Position.x,
-            y: spawnPoint.Position.y,
-            z: spawnPoint.Position.z
-        },
-        Rotation: { x: 0, y: 0 },
-        WeaponId: 0,
-        SkinId: 11
-    });
+    try {
+        const result = BotManager.AddBot({
+            Position: {
+                x: spawnPoint.Position.x,
+                y: spawnPoint.Position.y,
+                z: spawnPoint.Position.z
+            },
+            Rotation: {
+                x: 0,
+                y: 0
+            },
+            WeaponId: 0,
+            SkinId: 11
+        });
 
-    if (result && result.error) {
-        return result.error;
+        if (result && result.error) {
+            return result.error;
+        }
+
+        if (result && result.bot) {
+            result.bot.Attack = true;
+            return "Бот создан";
+        }
+
+        return "Сервер не подтвердил создание бота";
+    } catch (error) {
+        return "Ошибка: " + String(error);
     }
-
-    if (result && result.bot) {
-        result.bot.Attack = true;
-        return "Бот создан";
-    }
-
-    return "Не удалось создать бота";
 }
 
+// УДАЛЕНИЕ ОДНОГО БОТА
 function RemoveRedBot() {
-    const result = BotManager.RemoveBot();
+    try {
+        if (!BotManager.bots.length) {
+            return "Созданных ботов нет";
+        }
 
-    if (result && result.error) {
-        return result.error;
+        BotManager.RemoveBot();
+        return "Запрос на удаление бота выполнен";
+    } catch (error) {
+        return "Ошибка удаления: " + String(error);
     }
-
-    return "Запрос на удаление бота выполнен";
 }
 
+// УДАЛЕНИЕ ВСЕХ БОТОВ
 function ClearRedBots() {
-    const result = BotManager.ClearBots();
-
-    if (result && result.error) {
-        return result.error;
+    try {
+        BotManager.ClearBots();
+        return "Запрос на удаление всех ботов выполнен";
+    } catch (error) {
+        return "Ошибка удаления: " + String(error);
     }
-
-    return "Запрос на удаление всех ботов выполнен";
 }
 
-room.Chat.OnMessage.Add(function(message, chat) {
+// ЧАТ-КОМАНДЫ
+room_lib.Chat.OnMessage.Add(function(message, chat) {
     if (!message || message.Sender === 0) return;
 
     const text = message.Text;
 
     if (text === "/bot_red(+1)") {
-        const result = CreateRedBot();
-        Ui.GetContext().Hint.Value = result;
+        Ui.GetContext().Hint.Value = CreateRedBot();
         return;
     }
 
     if (text === "/bot_red(+5)") {
+        const bots = room_lib.Bots;
+
+        if (!bots) {
+            Ui.GetContext().Hint.Value = "Bots API недоступен";
+            return;
+        }
+
+        bots.PoolSize = 10;
+
         let created = 0;
         let error = "";
-
-        room_lib.Bots.PoolSize = 10;
 
         for (let i = 0; i < 5; i++) {
             const result = CreateRedBot();
@@ -234,8 +253,8 @@ room.Chat.OnMessage.Add(function(message, chat) {
         }
 
         Ui.GetContext().Hint.Value =
-            "Создано ботов: " + created +
-            (error ? ". Ошибка: " + error : "");
+            "Создано: " + created +
+            (error ? ". " + error : "");
 
         return;
     }
@@ -271,6 +290,7 @@ mainTimer.OnTimer.Add(function() {
 function SetWaitingMode() {
     stateProp.Value = WaitingStateValue;
     Ui.GetContext().Hint.Value = "Hint/WaitingPlayers";
+
     Spawns.GetContext().enable = false;
     mainTimer.Restart(WaitingPlayersTime);
 }
@@ -281,6 +301,7 @@ function SetTacticalPreparation() {
     Ui.GetContext().Hint.Value = "Hint/TacticalPrep";
 
     const inventory = Inventory.GetContext();
+
     inventory.Main.Value = false;
     inventory.Secondary.Value = false;
     inventory.Melee.Value = true;
