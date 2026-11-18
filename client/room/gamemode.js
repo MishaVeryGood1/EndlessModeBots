@@ -157,7 +157,15 @@ function CreateRedBot() {
         return "Не найдена группа спавна Red";
     }
 
-    const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
+const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
+
+if (!spawnPoint) {
+    return "Точка спавна не найдена";
+}
+
+if (!spawnPoint.Position) {
+    return "У точки спавна отсутствует Position";
+}
 
     if (!spawnPoint) {
         return "Нет точек спавна Red";
