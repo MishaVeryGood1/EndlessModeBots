@@ -8,7 +8,7 @@ const {
     NewGame, NewGameVote, MapEditor
 } = room_lib;
 
-// ПОДКЛЮЧЕНИЕ BOT MANAGER
+// BOT MANAGER
 import { createBotManager } from './bots/bot_manager.js';
 
 const BotManager = createBotManager(room_lib.Bots);
@@ -142,6 +142,115 @@ scores_timer.OnTimer.Add(function() {
     }
 });
 
+// ЧАТ-КОМАНДЫ ДЛЯ БОТОВ
+function CreateRedBot() {
+    const bots = room_lib.Bots;
+
+    if (!bots) {
+        return "Bots API недоступен";
+    }
+
+    const redSpawnGroup = Spawns.SpawnPoints.GetGroup(2);
+
+    if (!redSpawnGroup) {
+        return "Не найдена группа спавна Red (2)";
+    }
+
+    const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
+
+    if (!spawnPoint) {
+        return "В группе Red нет точек спавна";
+    }
+
+    const result = BotManager.AddBot({
+        Position: {
+            x: spawnPoint.Position.x,
+            y: spawnPoint.Position.y,
+            z: spawnPoint.Position.z
+        },
+        Rotation: { x: 0, y: 0 },
+        WeaponId: 0,
+        SkinId: 11
+    });
+
+    if (result && result.error) {
+        return result.error;
+    }
+
+    if (result && result.bot) {
+        result.bot.Attack = true;
+        return "Бот создан";
+    }
+
+    return "Не удалось создать бота";
+}
+
+function RemoveRedBot() {
+    const result = BotManager.RemoveBot();
+
+    if (result && result.error) {
+        return result.error;
+    }
+
+    return "Запрос на удаление бота выполнен";
+}
+
+function ClearRedBots() {
+    const result = BotManager.ClearBots();
+
+    if (result && result.error) {
+        return result.error;
+    }
+
+    return "Запрос на удаление всех ботов выполнен";
+}
+
+room_lib.Chat.OnMessage.Add(function(message, chat) {
+    if (!message || message.Sender === 0) return;
+
+    const text = message.Text;
+
+    if (text === "/bot_red(+1)") {
+        const result = CreateRedBot();
+        Ui.GetContext().Hint.Value = result;
+        return;
+    }
+
+    if (text === "/bot_red(+5)") {
+        let created = 0;
+        let error = "";
+
+        room_lib.Bots.PoolSize = 10;
+
+        for (let i = 0; i < 5; i++) {
+            const result = CreateRedBot();
+
+            if (result === "Бот создан") {
+                created++;
+            } else {
+                error = result;
+                break;
+            }
+        }
+
+        Ui.GetContext().Hint.Value =
+            "Создано ботов: " + created +
+            (error ? ". Ошибка: " + error : "");
+
+        return;
+    }
+
+    if (text === "/bot_red(-1)") {
+        Ui.GetContext().Hint.Value = RemoveRedBot();
+        return;
+    }
+
+    if (text === "/bot_clear(All)") {
+        Ui.GetContext().Hint.Value = ClearRedBots();
+        return;
+    }
+});
+
 // ПЕРЕКЛЮЧЕНИЕ СОСТОЯНИЙ
 mainTimer.OnTimer.Add(function() {
     switch (stateProp.Value) {
@@ -216,38 +325,6 @@ function SetGameMode() {
     Spawns.GetContext().Despawn();
 
     SpawnTeams();
-
-    // ТЕСТ: СОЗДАНИЕ ОДНОГО БОТА
-    const bots = room_lib.Bots;
-
-    if (!bots) {
-        Ui.GetContext().Hint.Value = "Bots API unavailable";
-    } else {
-        bots.PoolSize = 1;
-
-        const redSpawnGroup = Spawns.SpawnPoints.GetGroup(2);
-
-        if (redSpawnGroup) {
-            const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
-
-            if (spawnPoint) {
-                const bot = bots.CreateHuman({
-                    Position: {
-                        x: spawnPoint.Position.x,
-                        y: spawnPoint.Position.y,
-                        z: spawnPoint.Position.z
-                    },
-                    Rotation: { x: 0, y: 0 },
-                    WeaponId: 0,
-                    SkinId: 11
-                });
-
-                if (bot) {
-                    bot.Attack = true;
-                }
-            }
-        }
-    }
 
     elapsedSeconds = 0;
 
