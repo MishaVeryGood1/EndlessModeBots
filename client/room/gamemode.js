@@ -12,6 +12,8 @@ import * as teams from './default_teams.js';
 import * as damageScores from './damage_scores.js';
 import * as mapScores from './map_scores.js';
 import { addTeamScores } from './team_scores.js';
+import { BotManager } from './боты/bot_manager.js';
+import { BOT_CONFIG } from './боты/bot_config.js';
 
 room.PopupsEnable = true;
 
@@ -247,102 +249,18 @@ function SpawnTeams() {
 }
 
 // ==================================================
-// ЭКСПЕРИМЕНТАЛЬНЫЕ БОТЫ
+// БОТЫ — ПОДКЛЮЧЕНИЕ МЕНЕДЖЕРА
 // ==================================================
 
-function GetBotsList() {
-    try {
-        return Bots.All;
-    } catch (e) {
-        return null;
-    }
-}
+Bots.PoolSize = 10;
 
-// СОЗДАНИЕ БОТА
-function CreateTestBot() {
-    Ui.GetContext().Hint.Value = "BOT: COMMAND RECEIVED";
+// Проверка наличия менеджера
+Ui.GetContext().Hint.Value = "BotManager loaded";
 
-    try {
-        const spawnGroup = Spawns.SpawnPoints.GetGroup(1);
-
-        if (spawnGroup == null) {
-            Ui.GetContext().Hint.Value = "BOT: GROUP NOT FOUND";
-            return;
-        }
-
-        const spawnPoint = spawnGroup.GetRandomSpawnpoint();
-
-        if (spawnPoint == null) {
-            Ui.GetContext().Hint.Value = "BOT: POINT NOT FOUND";
-            return;
-        }
-
-        Bots.PoolSize = 5;
-
-        const bot = Bots.CreateHuman({
-            Position: spawnPoint.Position.ToVector(),
-            Rotation: { x: 0, y: 0 },
-            SkinId: 11,
-            WeaponId: 0
-        });
-
-        if (bot == null) {
-            Ui.GetContext().Hint.Value = "BOT: CREATE RETURNED NULL";
-            return;
-        }
-
-        bot.SkinId = 11;
-        bot.WeaponId = 0;
-        bot.Attack = false;
-
-        Ui.GetContext().Hint.Value = "BOT CREATED";
-
-    } catch (e) {
-        Ui.GetContext().Hint.Value = "BOT ERROR";
-    }
-}
-
-// УДАЛЕНИЕ ОДНОГО БОТА
-function RemoveOneBot() {
-    try {
-        const bots = GetBotsList();
-
-        if (bots == null || bots.length === 0) {
-            Ui.GetContext().Hint.Value = "BOT: NONE FOUND";
-            return;
-        }
-
-        bots[bots.length - 1].Destroy();
-
-        Ui.GetContext().Hint.Value = "BOT: REMOVE CALLED";
-
-    } catch (e) {
-        Ui.GetContext().Hint.Value = "BOT REMOVE ERROR";
-    }
-}
-
-// УДАЛЕНИЕ ВСЕХ БОТОВ
-function RemoveAllBots() {
-    try {
-        const bots = GetBotsList();
-
-        if (bots == null || bots.length === 0) {
-            Ui.GetContext().Hint.Value = "BOT: NONE FOUND";
-            return;
-        }
-
-        for (const bot of bots) {
-            bot.Destroy();
-        }
-
-        Ui.GetContext().Hint.Value = "BOT: CLEAR CALLED";
-
-    } catch (e) {
-        Ui.GetContext().Hint.Value = "BOT CLEAR ERROR";
-    }
-}
-
+// ==================================================
 // КОМАНДЫ ЧАТА
+// ==================================================
+
 Chat.OnMessage.Add(function(message) {
     try {
         if (message.Sender === 0) return;
@@ -350,29 +268,29 @@ Chat.OnMessage.Add(function(message) {
         const text = message.Text.trim();
 
         if (text === "/bot_red(+1)") {
-            CreateTestBot();
+            BotManager.AddBot();
             return;
         }
 
         if (text === "/bot_red(+5)") {
             for (let i = 0; i < 5; i++) {
-                CreateTestBot();
+                BotManager.AddBot();
             }
             return;
         }
 
         if (text === "/bot_red(-1)") {
-            RemoveOneBot();
+            BotManager.RemoveBot();
             return;
         }
 
         if (text === "/bot_clear(All)") {
-            RemoveAllBots();
+            BotManager.ClearBots();
             return;
         }
 
     } catch (e) {
-        Ui.GetContext().Hint.Value = "CHAT COMMAND ERROR";
+        Ui.GetContext().Hint.Value = "BOT COMMAND ERROR";
     }
 });
 
