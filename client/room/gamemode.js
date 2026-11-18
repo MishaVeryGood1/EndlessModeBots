@@ -37,6 +37,7 @@ Damage.GetContext().FriendlyFire.Value =
 
 BreackGraph.WeakBlocks =
     GameMode.Parameters.GetBool("LoosenBlocks");
+
 BreackGraph.OnlyPlayerBlocksDmg =
     GameMode.Parameters.GetBool("OnlyPlayerBlocksDmg");
 
@@ -97,7 +98,7 @@ Teams.OnPlayerChangeTeam.Add(function(player) {
     player.Spawns.Spawn();
 });
 
-// БЕССМЕРТИЕ
+// БЕССМЕРИЕ
 Spawns.GetContext().OnSpawn.Add(function(player) {
     player.Properties.Immortality.Value = true;
     player.Timers.Get(immortalityTimerName).Restart(3);
@@ -246,7 +247,7 @@ function SpawnTeams() {
 }
 
 // ==================================================
-// ТЕСТ БОТОВ
+// ЭКСПЕРИМЕНТАЛЬНЫЕ БОТЫ
 // ==================================================
 
 function GetBotsList() {
@@ -257,6 +258,7 @@ function GetBotsList() {
     }
 }
 
+// СОЗДАНИЕ БОТА
 function CreateTestBot() {
     Ui.GetContext().Hint.Value = "BOT: COMMAND RECEIVED";
 
@@ -280,7 +282,8 @@ function CreateTestBot() {
         const bot = Bots.CreateHuman({
             Position: spawnPoint.Position.ToVector(),
             Rotation: { x: 0, y: 0 },
-            SkinId: 11
+            SkinId: 11,
+            WeaponId: 0
         });
 
         if (bot == null) {
@@ -288,23 +291,29 @@ function CreateTestBot() {
             return;
         }
 
-        Ui.GetContext().Hint.Value = "BOT: CREATE CALLED";
+        bot.SkinId = 11;
+        bot.WeaponId = 0;
+        bot.Attack = false;
+
+        Ui.GetContext().Hint.Value = "BOT CREATED";
 
     } catch (e) {
         Ui.GetContext().Hint.Value = "BOT ERROR";
     }
 }
 
+// УДАЛЕНИЕ ОДНОГО БОТА
 function RemoveOneBot() {
     try {
         const bots = GetBotsList();
 
-        if (bots == null || bots.length == 0) {
+        if (bots == null || bots.length === 0) {
             Ui.GetContext().Hint.Value = "BOT: NONE FOUND";
             return;
         }
 
         bots[bots.length - 1].Destroy();
+
         Ui.GetContext().Hint.Value = "BOT: REMOVE CALLED";
 
     } catch (e) {
@@ -312,11 +321,12 @@ function RemoveOneBot() {
     }
 }
 
+// УДАЛЕНИЕ ВСЕХ БОТОВ
 function RemoveAllBots() {
     try {
         const bots = GetBotsList();
 
-        if (bots == null || bots.length == 0) {
+        if (bots == null || bots.length === 0) {
             Ui.GetContext().Hint.Value = "BOT: NONE FOUND";
             return;
         }
@@ -332,7 +342,7 @@ function RemoveAllBots() {
     }
 }
 
-// ЧАТ
+// КОМАНДЫ ЧАТА
 Chat.OnMessage.Add(function(message) {
     try {
         if (message.Sender === 0) return;
