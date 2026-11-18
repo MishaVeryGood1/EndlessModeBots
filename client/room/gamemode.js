@@ -5,15 +5,13 @@ const {
     room, Game, Players, Inventory, LeaderBoard,
     BuildBlocksSet, Teams, Damage, BreackGraph, Ui,
     Properties, GameMode, Spawns, Timers, TeamsBalancer,
-    NewGame, NewGameVote, MapEditor, Bots, Chat
+    NewGame, NewGameVote, MapEditor
 } = room_lib;
 
 import * as teams from './default_teams.js';
 import * as damageScores from './damage_scores.js';
 import * as mapScores from './map_scores.js';
 import { addTeamScores } from './team_scores.js';
-import { BotManager } from './боты/bot_manager.js';
-import { BOT_CONFIG } from './боты/bot_config.js';
 
 room.PopupsEnable = true;
 
@@ -247,52 +245,6 @@ function SpawnTeams() {
         Spawns.GetContext(team).Spawn();
     }
 }
-
-// ==================================================
-// БОТЫ — ПОДКЛЮЧЕНИЕ МЕНЕДЖЕРА
-// ==================================================
-
-Bots.PoolSize = 10;
-
-// Проверка наличия менеджера
-Ui.GetContext().Hint.Value = "BotManager loaded";
-
-// ==================================================
-// КОМАНДЫ ЧАТА
-// ==================================================
-
-Chat.OnMessage.Add(function(message) {
-    try {
-        if (message.Sender === 0) return;
-
-        const text = message.Text.trim();
-
-        if (text === "/bot_red(+1)") {
-            BotManager.AddBot();
-            return;
-        }
-
-        if (text === "/bot_red(+5)") {
-            for (let i = 0; i < 5; i++) {
-                BotManager.AddBot();
-            }
-            return;
-        }
-
-        if (text === "/bot_red(-1)") {
-            BotManager.RemoveBot();
-            return;
-        }
-
-        if (text === "/bot_clear(All)") {
-            BotManager.ClearBots();
-            return;
-        }
-
-    } catch (e) {
-        Ui.GetContext().Hint.Value = "BOT COMMAND ERROR";
-    }
-});
 
 // ЗАПУСК
 scores_timer.RestartLoop(30);
