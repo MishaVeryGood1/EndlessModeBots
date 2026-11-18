@@ -210,39 +210,41 @@ function SetGameMode() {
     }
 
     Spawns.GetContext().RespawnTime.Value = 0;
-Spawns.GetContext().Despawn();
+    Spawns.GetContext().Despawn();
 
-SpawnTeams();
+    SpawnTeams();
 
-// ТЕСТ: СОЗДАНИЕ ОДНОГО БОТА
-const bots = room_lib.Bots;
+    // ТЕСТ: СОЗДАНИЕ ОДНОГО БОТА
+    const bots = room_lib.Bots;
 
-if (bots) {
-    bots.PoolSize = 1;
+    if (bots) {
+        bots.PoolSize = 1;
 
-    const redSpawnGroup = Spawns.SpawnPoints.GetGroup(2);
-    const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
+        const redSpawnGroup = Spawns.SpawnPoints.GetGroup(2);
 
-    if (spawnPoint) {
-        const bot = bots.CreateHuman({
-            Position: {
-                x: spawnPoint.Position.x,
-                y: spawnPoint.Position.y,
-                z: spawnPoint.Position.z
-            },
-            Rotation: { x: 0, y: 0 },
-            WeaponId: 0,
-            SkinId: 11
-        });
+        if (redSpawnGroup) {
+            const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
 
-        if (bot) {
-            bot.Attack = true;
+            if (spawnPoint) {
+                const bot = bots.CreateHuman({
+                    Position: {
+                        x: spawnPoint.Position.x,
+                        y: spawnPoint.Position.y,
+                        z: spawnPoint.Position.z
+                    },
+                    Rotation: { x: 0, y: 0 },
+                    WeaponId: 0,
+                    SkinId: 11
+                });
+
+                if (bot) {
+                    bot.Attack = true;
+                }
+            }
         }
     }
-}
 
-elapsedSeconds = 0;
-
+    elapsedSeconds = 0;
 
     Ui.GetContext().Hint.Value = "Время: 00:00:00";
 
