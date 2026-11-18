@@ -187,6 +187,9 @@ function SetTacticalPreparation() {
     SpawnTeams();
 }
 
+// СЧЁТЧИК ВРЕМЕНИ
+var elapsedSeconds = 0;
+
 // БЕСКОНЕЧНЫЙ МАТЧ
 function SetGameMode() {
     stateProp.Value = GameStateValue;
@@ -217,7 +220,9 @@ function SetGameMode() {
     // ТЕСТ: СОЗДАНИЕ ОДНОГО БОТА
     const bots = room_lib.Bots;
 
-    if (bots) {
+    if (!bots) {
+        Ui.GetContext().Hint.Value = "Bots API unavailable";
+    } else {
         bots.PoolSize = 1;
 
         const redSpawnGroup = Spawns.SpawnPoints.GetGroup(2);
@@ -251,9 +256,7 @@ function SetGameMode() {
     elapsedTimer.RestartLoop(1);
 }
 
-// СЧЁТЧИК ВРЕМЕНИ
-var elapsedSeconds = 0;
-
+// ОБНОВЛЕНИЕ СЧЁТЧИКА
 function UpdateElapsedClock() {
     if (stateProp.Value !== GameStateValue) return;
 
