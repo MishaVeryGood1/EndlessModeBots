@@ -1,5 +1,7 @@
-import { DisplayValueHeader } from 'pixel_combats/basic';
+import * as basic_lib from 'pixel_combats/basic';
 import * as room_lib from 'pixel_combats/room';
+
+const { DisplayValueHeader } = basic_lib;
 
 const {
     room, Game, Players, Inventory, LeaderBoard,
@@ -145,8 +147,8 @@ scores_timer.OnTimer.Add(function() {
 // ПРОВЕРКА СОЗДАНИЯ VECTOR3
 function CreateRedBot() {
     try {
-        const position = new room_lib.Vector3(65, 16, 64);
-        const rotation = new room_lib.Vector2(0, 270);
+        const position = new basic_lib.Vector3(65, 16, 64);
+        const rotation = new basic_lib.Vector2(0, 270);
 
         return "Vector3: " + position +
             " | Vector2: " + rotation;
@@ -155,7 +157,6 @@ function CreateRedBot() {
         return "Ошибка конструктора: " + String(error);
     }
 }
-
 
 
 // УДАЛЕНИЕ ОДНОГО КРАСНОГО БОТА
