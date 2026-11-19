@@ -122,6 +122,26 @@ export function createBotManager(Bots) {
             }
         },
 
+// ==========================================
+// СЛЕЖЕНИЕ ЗА ИГРОКОМ ПО ID
+// ==========================================
+
+LookAtPlayerById(Players, playerId) {
+    const targetPlayer = Players.Get(playerId);
+
+    if (!targetPlayer || !targetPlayer.IsAlive) {
+        return;
+    }
+
+    const currentBots = bots.slice();
+
+    for (const bot of currentBots) {
+        if (!bot || !bot.Alive) continue;
+
+        bot.LookAt(targetPlayer.Position);
+    }
+},
+
         // ==========================================
         // ПОВОРОТ ГОЛОВЫ К ИГРОКАМ
         // ==========================================
