@@ -151,24 +151,24 @@ function CreateRedBot() {
         return "Bots API недоступен";
     }
 
-    const redSpawnGroup = Spawns.SpawnPoints.GetGroup(2);
-
-    if (!redSpawnGroup) {
-        return "Не найдена группа спавна Red";
-    }
-
-    const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
-
-    if (!spawnPoint) {
-        return "Точка спавна не найдена";
-    }
-
     try {
+        const redSpawnGroup = Spawns.SpawnPoints.GetGroup(2);
+
+        if (!redSpawnGroup || redSpawnGroup.Count === 0) {
+            return "В группе Red нет точек спавна";
+        }
+
+        const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
+
+        if (!spawnPoint || !spawnPoint.Position) {
+            return "Не удалось получить координаты спавна";
+        }
+
         const position = spawnPoint.Position.ToVector();
 
         const result = BotManager.AddBot({
             Position: position,
-            Rotation: { x: 0, y: 0 },
+            Rotation: { x: 0, y: spawnPoint.Angle },
             WeaponId: 0,
             SkinId: 11
         });
@@ -188,6 +188,85 @@ function CreateRedBot() {
         return "Ошибка создания: " + String(error);
     }
 }
+
+// УДАЛЕНИЕ ОДНОГО КРАСНОГО БОТА
+function RemoveRedBot() {
+    try {
+        if (BotManager.bots.length === 0) {
+            return "Созданных ботов нет";
+        }
+
+        BotManager.RemoveBot();
+        return "Запрос на удаление бота выполнен";
+    } catch (error) {
+        return "Ошибка удаления: " + String(error);
+    }
+}
+
+// УДАЛЕНИЕ ВСЕХ КРАСНЫХ БОТОВ
+function ClearRedBots() {
+    try {
+        BotManager.ClearBots();
+        return "Запрос на удаление всех ботов выполнен";
+    } catch (error) {
+        return "Ошибка удаления: " + String(error);
+    }
+}
+
+// СОЗДАНИЕ ПЯТИ КРАСНЫХ БОТОВ
+function CreateFiveRedBots() {
+    const bots = room_lib.Bots;
+
+    if (!bots) {
+        return "Bots API недоступен";
+    }
+
+    bots.PoolSize = 10;
+
+    let created = 0;
+    let error = "";
+
+    for (let i = 0; i < 5; i++) {
+        const result = CreateRedBot();
+
+        if (result === "Бот создан") {
+            created++;
+        } else {
+            error = result;
+            break;
+        }
+    }
+
+    return "Создано ботов: " + created +
+        (error ? ". " + error : "");
+}
+
+// ЧАТ-КОМАНДЫ БОТОВ
+room_lib.Chat.OnMessage.Add(function(message, chat) {
+    if (!message || message.Sender === 0) return;
+
+    const text = message.Text;
+
+    if (text === "/bot_red(+1)") {
+        Ui.GetContext().Hint.Value = CreateRedBot();
+        return;
+    }
+
+    if (text === "/bot_red(+5)") {
+        Ui.GetContext().Hint.Value = CreateFiveRedBots();
+        return;
+    }
+
+    if (text === "/bot_red(-1)") {
+        Ui.GetContext().Hint.Value = RemoveRedBot();
+        return;
+    }
+
+    if (text === "/bot_clear(All)") {
+        Ui.GetContext().Hint.Value = ClearRedBots();
+        return;
+    }
+});
 
 // Создаём бота
     try {
