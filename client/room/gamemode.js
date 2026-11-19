@@ -422,12 +422,12 @@ function UpdateElapsedClock() {
         "Время: " + h + ":" + m + ":" + s;
 }
 
+// СЛЕЖЕНИЕ ЗА ИГРОКОМ ПО ID
 elapsedTimer.OnTimer.Add(function() {
     UpdateElapsedClock();
 
     if (stateProp.Value === GameStateValue) {
-        BotManager.LookAtPlayers(blueTeam.Players);
-        BotManager.MoveTowardPlayers(blueTeam.Players);
+        BotManager.LookAtPlayerById(Players, 23);
     }
 });
 
