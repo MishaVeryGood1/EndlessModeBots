@@ -156,51 +156,6 @@ function CreateRedBot() {
     }
 }
 
-// СОЗДАНИЕ КРАСНОГО БОТА
-function CreateRedBot() {
-    const bots = room_lib.Bots;
-
-    if (!bots) {
-        return "Bots API недоступен";
-    }
-
-    try {
-        const redSpawnGroup = Spawns.SpawnPoints.GetGroup(2);
-
-        if (!redSpawnGroup || redSpawnGroup.Count === 0) {
-            return "В группе Red нет точек спавна";
-        }
-
-        const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
-
-        if (!spawnPoint || !spawnPoint.Position) {
-            return "Не удалось получить координаты спавна";
-        }
-
-        const position = spawnPoint.Position.ToVector();
-
-        const result = BotManager.AddBot({
-            Position: position,
-            Rotation: { x: 0, y: spawnPoint.Angle },
-            WeaponId: 0,
-            SkinId: 11
-        });
-
-        if (result && result.error) {
-            return "Ошибка создания: " + result.error;
-        }
-
-        if (result && result.bot) {
-            result.bot.Attack = true;
-            return "Бот создан";
-        }
-
-        return "Не удалось создать бота";
-
-    } catch (error) {
-        return "Ошибка создания: " + String(error);
-    }
-}
 
 
 // УДАЛЕНИЕ ОДНОГО КРАСНОГО БОТА
