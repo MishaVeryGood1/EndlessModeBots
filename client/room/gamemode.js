@@ -66,7 +66,6 @@ redTeam.Build.BlocksSet.Value = BuildBlocksSet.Red;
 LeaderBoard.PlayerLeaderBoardValues = [
     new DisplayValueHeader(KILLS_PROP_NAME, "Statistics/Kills", "Statistics/KillsShort"),
     new DisplayValueHeader("Deaths", "Statistics/Deaths", "Statistics/DeathsShort"),
-    new DisplayValueHeader("Spawns", "Statistics/Spawns", "Statistics/SpawnsShort"),
     new DisplayValueHeader(SCORES_PROP_NAME, "Statistics/Scores", "Statistics/ScoresShort")
 ];
 
@@ -254,115 +253,6 @@ room_lib.Chat.OnMessage.Add(function(message, chat) {
 
     if (text === "/bot_red(+5)") {
         Ui.GetContext().Hint.Value = CreateFiveRedBots();
-        return;
-    }
-
-    if (text === "/bot_red(-1)") {
-        Ui.GetContext().Hint.Value = RemoveRedBot();
-        return;
-    }
-
-    if (text === "/bot_clear(All)") {
-        Ui.GetContext().Hint.Value = ClearRedBots();
-        return;
-    }
-});
-
-// Создаём бота
-    try {
-        const result = BotManager.AddBot({
-            Position: {
-                x: x,
-                y: y,
-                z: z
-            },
-            Rotation: {
-                x: 0,
-                y: angle
-            },
-            WeaponId: 0,
-            SkinId: 11
-        });
-
-        if (result && result.error) {
-            return "Ошибка создания: " + result.error;
-        }
-
-        if (result && result.bot) {
-            result.bot.Attack = true;
-            return "Бот создан! Координаты: " + spawnText;
-        }
-
-        return "Сервер не подтвердил создание бота";
-
-    } catch (error) {
-        return "Ошибка: " + String(error);
-    }
-}
-
-// УДАЛЕНИЕ ОДНОГО БОТА
-function RemoveRedBot() {
-    try {
-        if (!BotManager.bots.length) {
-            return "Созданных ботов нет";
-        }
-
-        BotManager.RemoveBot();
-        return "Запрос на удаление бота выполнен";
-    } catch (error) {
-        return "Ошибка удаления: " + String(error);
-    }
-}
-
-// УДАЛЕНИЕ ВСЕХ БОТОВ
-function ClearRedBots() {
-    try {
-        BotManager.ClearBots();
-        return "Запрос на удаление всех ботов выполнен";
-    } catch (error) {
-        return "Ошибка удаления: " + String(error);
-    }
-}
-
-// ЧАТ-КОМАНДЫ
-room_lib.Chat.OnMessage.Add(function(message, chat) {
-    if (!message || message.Sender === 0) return;
-
-    const text = message.Text;
-
-    if (text === "/bot_red(+1)") {
-        Ui.GetContext().Hint.Value = CreateRedBot();
-        return;
-    }
-
-    if (text === "/bot_red(+5)") {
-        const bots = room_lib.Bots;
-
-        if (!bots) {
-            Ui.GetContext().Hint.Value = "Bots API недоступен";
-            return;
-        }
-
-        bots.PoolSize = 10;
-
-        let created = 0;
-        let error = "";
-
-        for (let i = 0; i < 5; i++) {
-            const result = CreateRedBot();
-
-            if (result === "Бот создан") {
-                created++;
-            } else {
-                error = result;
-                break;
-            }
-        }
-
-        Ui.GetContext().Hint.Value =
-            "Создано: " + created +
-            (error ? ". " + error : "");
-
         return;
     }
 
