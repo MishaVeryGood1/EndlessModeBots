@@ -8,15 +8,21 @@ export function createBotManager(Bots) {
     const bots = [];
 
     if (Bots) {
-        // Получаем синхронизированные объекты созданных ботов
         Bots.OnNewBot.Add(function(bot, botsService) {
             if (!bot) return;
 
-            bots.push(bot);
+            const exists = bots.some(function(item) {
+                return item.Id === bot.Id;
+            });
+
+            if (!exists) {
+                bots.push(bot);
+            }
         });
 
-        // Убираем бота из списка после удаления
         Bots.OnBotRemove.Add(function(bot, botsService) {
+            if (!bot) return;
+
             const index = bots.findIndex(function(item) {
                 return item.Id === bot.Id;
             });
@@ -33,7 +39,8 @@ export function createBotManager(Bots) {
         AddBot(spawnData) {
             if (!Bots) {
                 return {
-                    error: "Bots service is unavailable"
+                    success: false,
+                    error: "Bots service unavailable"
                 };
             }
 
@@ -44,17 +51,18 @@ export function createBotManager(Bots) {
 
                 if (!bot) {
                     return {
-                        error: "CreateHuman returned null. Возможно, вызов не на сервере."
+                        success: false,
+                        error: "CreateHuman returned null"
                     };
                 }
 
                 return {
-                    success: true,
-                    message: "Запрос на создание бота выполнен"
+                    success: true
                 };
 
             } catch (error) {
                 return {
+                    success: false,
                     error: String(error)
                 };
             }
@@ -63,25 +71,44 @@ export function createBotManager(Bots) {
         RemoveBot() {
             if (bots.length === 0) {
                 return {
+                    success: false,
                     error: "Ботов нет"
                 };
             }
 
-            const bot = bots.pop();
+            const bot = bots[bots.length - 1];
 
             try {
                 bot.Destroy();
 
                 return {
-                    success: true,
-                    message: "Бот удалён"
+                    success: true
                 };
 
             } catch (error) {
                 return {
+                    success: false,
                     error: String(error)
                 };
             }
         },
 
-        ClearBots
+        ClearBots() {
+            const currentBots = bots.slice();
+            let removed = 0;
+
+            for (const bot of currentBots) {
+                try {
+                    bot.Destroy();
+                    removed++;
+                } catch (error) {
+                }
+            }
+
+            return {
+                success: true,
+                removed: removed
+            };
+        }
+    };
+}
