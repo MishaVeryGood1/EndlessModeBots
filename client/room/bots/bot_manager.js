@@ -68,6 +68,37 @@ export function createBotManager(Bots) {
             }
         },
 
+        LookAtPlayers(targetPlayers) {
+            const currentBots = bots.slice();
+
+            for (const bot of currentBots) {
+                if (!bot || !bot.Alive) continue;
+
+                let nearestPlayer = null;
+                let nearestDistance = Infinity;
+
+                for (const player of targetPlayers) {
+                    if (!player || !player.IsAlive) continue;
+
+                    const dx = player.Position.x - bot.Position.x;
+                    const dy = player.Position.y - bot.Position.y;
+                    const dz = player.Position.z - bot.Position.z;
+
+                    const distance =
+                        dx * dx + dy * dy + dz * dz;
+
+                    if (distance < nearestDistance) {
+                        nearestDistance = distance;
+                        nearestPlayer = player;
+                    }
+                }
+
+                if (nearestPlayer) {
+                    bot.LookAt(nearestPlayer.Position);
+                }
+            }
+        },
+
         RemoveBot() {
             if (bots.length === 0) {
                 return {
