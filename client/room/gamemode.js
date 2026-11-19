@@ -163,21 +163,31 @@ function CreateRedBot() {
         return "Точка спавна не найдена";
     }
 
-    // Получаем координаты из строкового представления
-    const spawnText = String(spawnPoint);
+    try {
+        const position = spawnPoint.Position.ToVector();
 
-    const match = spawnText.match(
-        /\((-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)\),(-?\d+(?:\.\d+)?)/
-    );
+        const result = BotManager.AddBot({
+            Position: position,
+            Rotation: { x: 0, y: 0 },
+            WeaponId: 0,
+            SkinId: 11
+        });
 
-    if (!match) {
-        return "Не удалось прочитать координаты: " + spawnText;
+        if (result && result.error) {
+            return "Ошибка создания: " + result.error;
+        }
+
+        if (result && result.bot) {
+            result.bot.Attack = true;
+            return "Бот создан";
+        }
+
+        return "Не удалось создать бота";
+
+    } catch (error) {
+        return "Ошибка создания: " + String(error);
     }
-
-    const x = Number(match[1]);
-    const y = Number(match[2]);
-    const z = Number(match[3]);
-    const angle = Number(match[4]);
+}
 
 // Создаём бота
     try {
