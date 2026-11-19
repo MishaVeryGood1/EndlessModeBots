@@ -163,14 +163,17 @@ function CreateRedBot() {
         return "Точка спавна не найдена";
     }
 
-    let result = "Тип: " + typeof spawnPoint;
+    let result = "Position type: " + typeof spawnPoint.Position;
+    result += "; Angle type: " + typeof spawnPoint.Angle;
 
     try {
-        result += "; Ключи: " + Object.keys(spawnPoint).join(", ");
-        result += "; Собственные свойства: " +
-            Object.getOwnPropertyNames(spawnPoint).join(", ");
+        result += "; Position descriptor: " +
+            JSON.stringify(Object.getOwnPropertyDescriptor(spawnPoint, "Position"));
+
+        result += "; Angle descriptor: " +
+            JSON.stringify(Object.getOwnPropertyDescriptor(spawnPoint, "Angle"));
     } catch (error) {
-        result += "; Ошибка проверки: " + String(error);
+        result += "; Ошибка: " + String(error);
     }
 
     return result;
