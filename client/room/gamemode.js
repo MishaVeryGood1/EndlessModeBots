@@ -157,26 +157,17 @@ function CreateRedBot() {
         return "Не найдена группа спавна Red";
     }
 
-        const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
+    const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
 
     if (!spawnPoint) {
         return "Точка спавна не найдена";
     }
 
-    let result = "Position type: " + typeof spawnPoint.Position;
-    result += "; Angle type: " + typeof spawnPoint.Angle;
+    const position = spawnPoint.POSITION;
+    const angle = spawnPoint.ANGLE;
 
-    try {
-        result += "; Position descriptor: " +
-            JSON.stringify(Object.getOwnPropertyDescriptor(spawnPoint, "Position"));
-
-        result += "; Angle descriptor: " +
-            JSON.stringify(Object.getOwnPropertyDescriptor(spawnPoint, "Angle"));
-    } catch (error) {
-        result += "; Ошибка: " + String(error);
-    }
-
-    return result;
+    return "POSITION: " + String(position) +
+        "; ANGLE: " + String(angle);
 }
 
 // УДАЛЕНИЕ ОДНОГО БОТА
