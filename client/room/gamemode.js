@@ -194,16 +194,14 @@ function CreateRedBot() {
             SkinId: 11
         });
 
-        if (result && result.error) {
-            return "Ошибка создания: " + result.error;
-        }
+if (!result || !result.success) {
+    return "Ошибка создания: " +
+        (result && result.error
+            ? result.error
+            : "Неизвестная ошибка");
+}
 
-        if (result && result.bot) {
-            result.bot.Attack = true;
-            return "Бот создан";
-        }
-
-        return "Не удалось создать бота";
+return "Запрос на создание бота выполнен";
 
     } catch (error) {
         return "Ошибка создания: " + String(error);
