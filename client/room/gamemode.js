@@ -222,8 +222,8 @@ function CreateRedBot() {
         const result = BotManager.AddBot({
             Position: position,
             Rotation: rotation,
-            WeaponId: 0,
-            SkinId: 11
+            WeaponId: 2,
+            SkinId: 10
         });
 
 if (!result || !result.success) {
