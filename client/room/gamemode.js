@@ -424,6 +424,10 @@ function UpdateElapsedClock() {
 
 elapsedTimer.OnTimer.Add(function() {
     UpdateElapsedClock();
+
+    if (stateProp.Value === GameStateValue) {
+        BotManager.LookAtPlayers(blueTeam.Players);
+    }
 });
 
 // СПАВН КОМАНД
