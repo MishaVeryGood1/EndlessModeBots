@@ -144,17 +144,69 @@ scores_timer.OnTimer.Add(function() {
     }
 });
 
-// ПРОВЕРКА СОЗДАНИЯ VECTOR3
+// СОЗДАНИЕ КРАСНОГО БОТА2
 function CreateRedBot() {
-    try {
-        const position = new basic_lib.Vector3(65, 16, 64);
-        const rotation = new basic_lib.Vector2(0, 270);
+    const bots = room_lib.Bots;
 
-        return "Vector3: " + position +
-            " | Vector2: " + rotation;
+    if (!bots) {
+        return "Bots API недоступен";
+    }
+
+    try {
+        bots.PoolSize = 10;
+
+        const redSpawnGroup = Spawns.SpawnPoints.GetGroup(2);
+
+        if (!redSpawnGroup || redSpawnGroup.Count === 0) {
+            return "В группе Red нет точек спавна";
+        }
+
+        const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
+
+        if (!spawnPoint) {
+            return "Не удалось получить точку спавна";
+        }
+
+        const spawnText = String(spawnPoint);
+        const match = spawnText.match(
+            /\((-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)\),\s*(-?\d+(?:\.\d+)?)/
+        );
+
+        if (!match) {
+            return "Не удалось прочитать координаты: " + spawnText;
+        }
+
+        const position = new basic_lib.Vector3(
+            Number(match[1]),
+            Number(match[2]),
+            Number(match[3])
+        );
+
+        const rotation = new basic_lib.Vector2(
+            0,
+            Number(match[4])
+        );
+
+        const result = BotManager.AddBot({
+            Position: position,
+            Rotation: rotation,
+            WeaponId: 0,
+            SkinId: 11
+        });
+
+        if (result && result.error) {
+            return "Ошибка создания: " + result.error;
+        }
+
+        if (result && result.bot) {
+            result.bot.Attack = true;
+            return "Бот создан";
+        }
+
+        return "Не удалось создать бота";
 
     } catch (error) {
-        return "Ошибка конструктора: " + String(error);
+        return "Ошибка создания: " + String(error);
     }
 }
 
