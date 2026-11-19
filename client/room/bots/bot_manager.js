@@ -1,3 +1,5 @@
+import * as room_lib from 'pixel_combats/room';
+
 export const BOT_CONFIG = {
     Team: "Red",
     SkinId: 11,
@@ -96,6 +98,54 @@ export function createBotManager(Bots) {
                 if (nearestPlayer) {
                     bot.LookAt(nearestPlayer.Position);
                 }
+            }
+        },
+
+        MoveTowardPlayers(targetPlayers) {
+            const currentBots = bots.slice();
+            const step = 0.5;
+
+            for (const bot of currentBots) {
+                if (!bot || !bot.Alive) continue;
+
+                let nearestPlayer = null;
+                let nearestDistance = Infinity;
+
+                for (const player of targetPlayers) {
+                    if (!player || !player.IsAlive) continue;
+
+                    const dx = player.Position.x - bot.Position.x;
+                    const dy = player.Position.y - bot.Position.y;
+                    const dz = player.Position.z - bot.Position.z;
+
+                    const distance = dx * dx + dy * dy + dz * dz;
+
+                    if (distance < nearestDistance) {
+                        nearestDistance = distance;
+                        nearestPlayer = player;
+                    }
+                }
+
+                if (!nearestPlayer || nearestDistance < 4) continue;
+
+                const dx = nearestPlayer.Position.x - bot.Position.x;
+                const dy = nearestPlayer.Position.y - bot.Position.y;
+                const dz = nearestPlayer.Position.z - bot.Position.z;
+
+                const distance = Math.sqrt(
+                    dx * dx + dy * dy + dz * dz
+                );
+
+                if (distance === 0) continue;
+
+                const newPosition = new room_lib.Vector3(
+                    bot.Position.x + (dx / distance) * step,
+                    bot.Position.y + (dy / distance) * step,
+                    bot.Position.z + (dz / distance) * step
+                );
+
+                bot.Position = newPosition;
+                bot.LookAt(nearestPlayer.Position);
             }
         },
 
