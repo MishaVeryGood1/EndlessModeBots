@@ -157,20 +157,58 @@ function CreateRedBot() {
         return "Не найдена группа спавна Red";
     }
 
-    const spawnPoints = redSpawnGroup.All;
+    const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
 
-    if (!spawnPoints) {
-        return "Список точек спавна недоступен";
+    if (!spawnPoint) {
+        return "Точка спавна не найдена";
     }
 
-    if (spawnPoints.length === 0) {
-        return "В группе Red нет точек спавна";
+    // Получаем координаты из строкового представления
+    const spawnText = String(spawnPoint);
+
+    const match = spawnText.match(
+        /\((-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)\),(-?\d+(?:\.\d+)?)/
+    );
+
+    if (!match) {
+        return "Не удалось прочитать координаты: " + spawnText;
     }
 
-    const spawnPoint = spawnPoints[0];
+    const x = Number(match[1]);
+    const y = Number(match[2]);
+    const z = Number(match[3]);
+    const angle = Number(match[4]);
 
-    return "Количество точек: " + spawnPoints.length +
-        "; Точка: " + String(spawnPoint);
+// Создаём бота
+    try {
+        const result = BotManager.AddBot({
+            Position: {
+                x: x,
+                y: y,
+                z: z
+            },
+            Rotation: {
+                x: 0,
+                y: angle
+            },
+            WeaponId: 0,
+            SkinId: 11
+        });
+
+        if (result && result.error) {
+            return "Ошибка создания: " + result.error;
+        }
+
+        if (result && result.bot) {
+            result.bot.Attack = true;
+            return "Бот создан! Координаты: " + spawnText;
+        }
+
+        return "Сервер не подтвердил создание бота";
+
+    } catch (error) {
+        return "Ошибка: " + String(error);
+    }
 }
 
 // УДАЛЕНИЕ ОДНОГО БОТА
