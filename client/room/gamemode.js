@@ -132,6 +132,9 @@ MapEditor.OnMapEdited.Add(function(player, details) {
     mapScores.applyMapEditScores(player, details, blueTeam, redTeam);
 });
 
+// СЧЁТЧИК УНИЧТОЖЕННЫХ БОТОВ
+const botKillsByPlayer = Object.create(null);
+
 // УВЕДОМЛЕНИЕ О СМЕРТИ БОТА
 room_lib.Bots.OnBotDeath.Add(function(data) {
     if (!data) return;
@@ -142,8 +145,19 @@ room_lib.Bots.OnBotDeath.Add(function(data) {
     if (!bot) return;
 
     if (player) {
+        const playerName = player.NickName;
+
+        if (!botKillsByPlayer[playerName]) {
+            botKillsByPlayer[playerName] = 0;
+        }
+
+        botKillsByPlayer[playerName]++;
+
         Ui.GetContext().Hint.Value =
-            player.NickName + " уничтожил бота №" + bot.Id;
+            playerName +
+            " уничтожил бота №" + bot.Id +
+            " | Всего ботов: " + botKillsByPlayer[playerName];
+
     } else {
         Ui.GetContext().Hint.Value =
             "Бот №" + bot.Id + " уничтожен";
