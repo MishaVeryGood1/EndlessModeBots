@@ -427,6 +427,7 @@ elapsedTimer.OnTimer.Add(function() {
 
     if (stateProp.Value === GameStateValue) {
         BotManager.LookAtPlayers(blueTeam.Players);
+        BotManager.MoveTowardPlayers(blueTeam.Players);
     }
 });
 
