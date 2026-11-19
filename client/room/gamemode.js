@@ -249,7 +249,7 @@ function CreateFiveRedBots() {
     for (let i = 0; i < 5; i++) {
         const result = CreateRedBot();
 
-        if (result === "Бот создан") {
+        if (result === "Запрос на создание бота выполнен") {
             created++;
         } else {
             error = result;
@@ -257,7 +257,7 @@ function CreateFiveRedBots() {
         }
     }
 
-    return "Создано ботов: " + created +
+    return "Запросов на создание: " + created +
         (error ? ". " + error : "");
 }
 
