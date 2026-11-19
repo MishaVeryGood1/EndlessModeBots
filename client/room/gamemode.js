@@ -142,6 +142,20 @@ scores_timer.OnTimer.Add(function() {
     }
 });
 
+// ПРОВЕРКА СОЗДАНИЯ VECTOR3
+function CreateRedBot() {
+    try {
+        const position = new room_lib.Vector3(65, 16, 64);
+        const rotation = new room_lib.Vector2(0, 270);
+
+        return "Vector3: " + position +
+            " | Vector2: " + rotation;
+
+    } catch (error) {
+        return "Ошибка конструктора: " + String(error);
+    }
+}
+
 // СОЗДАНИЕ КРАСНОГО БОТА
 function CreateRedBot() {
     const bots = room_lib.Bots;
