@@ -132,6 +132,24 @@ MapEditor.OnMapEdited.Add(function(player, details) {
     mapScores.applyMapEditScores(player, details, blueTeam, redTeam);
 });
 
+// УВЕДОМЛЕНИЕ О СМЕРТИ БОТА
+room_lib.Bots.OnBotDeath.Add(function(data) {
+    if (!data) return;
+
+    const bot = data.Bot;
+    const player = data.Player;
+
+    if (!bot) return;
+
+    if (player) {
+        Ui.GetContext().Hint.Value =
+            player.NickName + " уничтожил бота №" + bot.Id;
+    } else {
+        Ui.GetContext().Hint.Value =
+            "Бот №" + bot.Id + " уничтожен";
+    }
+});
+
 // ОЧКИ ЗА ВРЕМЯ
 scores_timer.OnTimer.Add(function() {
     if (stateProp.Value !== GameStateValue) return;
