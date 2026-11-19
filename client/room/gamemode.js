@@ -202,40 +202,6 @@ function CreateRedBot() {
     }
 }
 
-// ПРОВЕРКА КООРДИНАТ КРАСНОГО СПАВНА
-function CreateRedBot() {
-    try {
-        const redSpawnGroup = Spawns.SpawnPoints.GetGroup(2);
-
-        if (!redSpawnGroup || redSpawnGroup.Count === 0) {
-            return "В группе Red нет точек спавна";
-        }
-
-        const spawnPoint = redSpawnGroup.GetRandomSpawnpoint();
-        const spawnText = String(spawnPoint);
-
-        const match = spawnText.match(
-            /\((-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)\),\s*(-?\d+(?:\.\d+)?)/
-        );
-
-        if (!match) {
-            return "Не удалось разобрать координаты: " + spawnText;
-        }
-
-        const x = Number(match[1]);
-        const y = Number(match[2]);
-        const z = Number(match[3]);
-        const angle = Number(match[4]);
-
-        return "Координаты: X=" + x +
-            " Y=" + y +
-            " Z=" + z +
-            " Угол=" + angle;
-
-    } catch (error) {
-        return "Ошибка проверки: " + String(error);
-    }
-}
 
 // УДАЛЕНИЕ ОДНОГО КРАСНОГО БОТА
 function RemoveRedBot() {
