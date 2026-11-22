@@ -122,32 +122,25 @@ export function createBotManager(Bots) {
             }
         },
 
-// ==========================================
-// СЛЕЖЕНИЕ ЗА ИГРОКОМ ПО ID
-// ==========================================
+        // ==========================================
+        // СЛЕЖЕНИЕ ЗА ИГРОКОМ ПО ID
+        // ==========================================
 
-LookAtPlayerById(Players, playerId) {
-    const targetPlayer = Players.GetByRoomId(playerId);
+        LookAtPlayerById(Players, playerId) {
+            const targetPlayer = Players.GetByRoomId(playerId);
 
-    if (!targetPlayer || !targetPlayer.IsAlive) {
-        return;
-    }
+            if (!targetPlayer || !targetPlayer.IsAlive) {
+                return;
+            }
 
-    const currentBots = bots.slice();
+            const currentBots = bots.slice();
 
-    for (const bot of currentBots) {
-        if (!bot || !bot.Alive) continue;
+            for (const bot of currentBots) {
+                if (!bot || !bot.Alive) continue;
 
-        // НАПРАВЛЯЕМ ВЗГЛЯД ЧУТЬ ВЫШЕ
-        const lookPoint = new room_lib.Vector3(
-            targetPlayer.Position.x,
-            targetPlayer.Position.y + 1.5,
-            targetPlayer.Position.z
-        );
-
-        bot.LookAt(lookPoint);
-    }
-},
+                bot.LookAt(targetPlayer.Position);
+            }
+        },
 
         // ==========================================
         // ПОВОРОТ ГОЛОВЫ К ИГРОКАМ
