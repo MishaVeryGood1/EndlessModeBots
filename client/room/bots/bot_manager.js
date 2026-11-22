@@ -136,7 +136,11 @@ LookAtPlayerById(Players, playerId) {
     const currentBots = bots.slice();
 
     for (const bot of currentBots) {
-        if (!bot || !bot.Alive || !bot.Position) continue;
+        if (!bot || !bot.Alive) continue;
+
+        bot.LookAt(targetPlayer.Position);
+    }
+},
 
         // ВЫЧИСЛЯЕМ НАПРАВЛЕНИЕ ВЗГЛЯДА
         const dx = targetPlayer.Position.x - bot.Position.x;
