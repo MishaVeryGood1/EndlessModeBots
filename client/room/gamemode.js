@@ -36,6 +36,9 @@ const mainTimer = Timers.GetContext().Get("Main");
 const scores_timer = Timers.GetContext().Get("Scores");
 const elapsedTimer = Timers.GetContext().Get("ElapsedClock");
 
+// ОТДЕЛЬНЫЙ ТАЙМЕР УПРАВЛЕНИЯ БОТАМИ
+const botFollowTimer = Timers.GetContext().Get("BotFollow");
+
 const stateProp = Properties.GetContext().Get("State");
 
 // НАСТРОЙКИ УРОНА
