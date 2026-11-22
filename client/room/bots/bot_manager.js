@@ -217,7 +217,7 @@ export function createBotManager(Bots) {
                     newZ
                 );
 
-                                // НОВОЕ НАПРАВЛЕНИЕ ДВИЖЕНИЯ
+                // НОВОЕ НАПРАВЛЕНИЕ ДВИЖЕНИЯ
                 const lookDirection = new room_lib.Vector3(
                     dx / distance,
                     0,
@@ -226,9 +226,8 @@ export function createBotManager(Bots) {
 
                 // УСТАНАВЛИВАЕМ ПОЗИЦИЮ И НАПРАВЛЕНИЕ БОТА
                 bot.SetPositionAndDirection(newPosition, lookDirection);
-
-                // УСТАНАВЛИВАЕМ ПОЗИЦИЮ И НАПРАВЛЕНИЕ БОТА
-                bot.SetPositionAndDirection(newPosition, lookDirection);
+            }
+        },
 
         // ==========================================
         // УДАЛЕНИЕ ОДНОГО БОТА
@@ -260,7 +259,7 @@ export function createBotManager(Bots) {
         },
 
         // ==========================================
-        // УДАЛЕНИЕ ВСЕХ БОТОВ
+        // УДАЛЕНИЕ ВСЕХ БОТОВ2
         // ==========================================
 
         ClearBots() {
