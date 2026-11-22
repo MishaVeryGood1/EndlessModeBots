@@ -427,14 +427,7 @@ elapsedTimer.OnTimer.Add(function() {
     UpdateElapsedClock();
 
     if (stateProp.Value === GameStateValue) {
-        const playerList = Players.All.map(function(player) {
-            return player.NickName +
-                " | ID: " + player.Id +
-                " | Room ID: " + player.IdInRoom;
-        }).join(" ; ");
-
-        Ui.GetContext().Hint.Value =
-            "Игроки в комнате: " + playerList;
+        BotManager.LookAtPlayerById(Players, 1);
     }
 });
 
