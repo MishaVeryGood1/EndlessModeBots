@@ -142,23 +142,6 @@ LookAtPlayerById(Players, playerId) {
     }
 },
 
-        // ВЫЧИСЛЯЕМ НАПРАВЛЕНИЕ ВЗГЛЯДА
-        const dx = targetPlayer.Position.x - bot.Position.x;
-        const dy = (targetPlayer.Position.y + 1) - bot.Position.y;
-        const dz = targetPlayer.Position.z - bot.Position.z;
-
-        const length = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-        if (length === 0) continue;
-
-        // УСТАНАВЛИВАЕМ НАПРАВЛЕНИЕ ВЗГЛЯДА
-        bot.LookDirection = new room_lib.Vector3(
-            dx / length,
-            dy / length,
-            dz / length
-        );
-    }
-},
 
         // ==========================================
         // ПОВОРОТ ГОЛОВЫ К ИГРОКАМ
