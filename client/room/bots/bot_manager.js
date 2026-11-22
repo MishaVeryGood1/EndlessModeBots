@@ -127,7 +127,7 @@ export function createBotManager(Bots) {
 // ==========================================
 
 LookAtPlayerById(Players, playerId) {
-    const targetPlayer = Players.Get(playerId);
+    const targetPlayer = Players.GetByRoomId(playerId);
 
     if (!targetPlayer || !targetPlayer.IsAlive) {
         return;
