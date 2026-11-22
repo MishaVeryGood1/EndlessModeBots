@@ -406,6 +406,10 @@ function SetGameMode() {
     Ui.GetContext().Hint.Value = "Время: 00:00:00";
 
     elapsedTimer.RestartLoop(1);
+
+// ЗАПУСК ОТДЕЛЬНОГО ТАЙМЕРА БОТОВ
+botFollowTimer.RestartLoop(1);
+
 }
 
 // ОБНОВЛЕНИЕ СЧЁТЧИКА
