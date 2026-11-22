@@ -217,8 +217,18 @@ export function createBotManager(Bots) {
                     newZ
                 );
 
-                // Изменяем позицию бота
-                bot.Position = newPosition;
+                // НОВОЕ НАПРАВЛЕНИЕ ДВИЖЕНИЯ
+const lookDirection = new room_lib.Vector3(
+    dx / distance,
+    0,
+    dz / distance
+);
+
+// УСТАНАВЛИВАЕМ ПОЗИЦИЮ И НАПРАВЛЕНИЕ БОТА
+bot.SetPositionAndDirection(newPosition, lookDirection);
+
+// Сохраняем направление взгляда
+bot.LookAt(nearestPlayer.Position);
 
                 // Сохраняем направление взгляда
                 bot.LookAt(nearestPlayer.Position);
