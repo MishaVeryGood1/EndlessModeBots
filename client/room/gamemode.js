@@ -422,12 +422,24 @@ function UpdateElapsedClock() {
         "Время: " + h + ":" + m + ":" + s;
 }
 
-// СЛЕЖЕНИЕ ЗА ИГРОКОМ ПО ID
+// ==========================================
+// СЛЕЖЕНИЕ И ПЕРЕМЕЩЕНИЕ БОТОВ К ИГРОКУ
+// ==========================================
+
 elapsedTimer.OnTimer.Add(function() {
     UpdateElapsedClock();
 
     if (stateProp.Value === GameStateValue) {
+
+        // БОТ СМОТРИТ НА ИГРОКА
         BotManager.LookAtPlayerById(Players, 1);
+
+        // БОТ ПОСТЕПЕННО ПРИБЛИЖАЕТСЯ К ИГРОКУ
+        const targetPlayer = Players.GetByRoomId(1);
+
+        if (targetPlayer && targetPlayer.IsAlive) {
+            BotManager.MoveTowardPlayers([targetPlayer]);
+        }
     }
 });
 
