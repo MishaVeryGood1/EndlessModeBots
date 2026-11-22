@@ -122,25 +122,39 @@ export function createBotManager(Bots) {
             }
         },
 
-        // ==========================================
-        // СЛЕЖЕНИЕ ЗА ИГРОКОМ ПО ID
-        // ==========================================
+        // // ==========================================
+// СЛЕЖЕНИЕ ЗА ИГРОКОМ ПО ID
+// ==========================================
 
-        LookAtPlayerById(Players, playerId) {
-            const targetPlayer = Players.GetByRoomId(playerId);
+LookAtPlayerById(Players, playerId) {
+    const targetPlayer = Players.GetByRoomId(playerId);
 
-            if (!targetPlayer || !targetPlayer.IsAlive) {
-                return;
-            }
+    if (!targetPlayer || !targetPlayer.IsAlive) {
+        return;
+    }
 
-            const currentBots = bots.slice();
+    const currentBots = bots.slice();
 
-            for (const bot of currentBots) {
-                if (!bot || !bot.Alive) continue;
+    for (const bot of currentBots) {
+        if (!bot || !bot.Alive || !bot.Position) continue;
 
-                bot.LookAt(targetPlayer.Position);
-            }
-        },
+        // ВЫЧИСЛЯЕМ НАПРАВЛЕНИЕ ВЗГЛЯДА
+        const dx = targetPlayer.Position.x - bot.Position.x;
+        const dy = (targetPlayer.Position.y + 1) - bot.Position.y;
+        const dz = targetPlayer.Position.z - bot.Position.z;
+
+        const length = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+        if (length === 0) continue;
+
+        // УСТАНАВЛИВАЕМ НАПРАВЛЕНИЕ ВЗГЛЯДА
+        bot.LookDirection = new room_lib.Vector3(
+            dx / length,
+            dy / length,
+            dz / length
+        );
+    }
+},
 
         // ==========================================
         // ПОВОРОТ ГОЛОВЫ К ИГРОКАМ
