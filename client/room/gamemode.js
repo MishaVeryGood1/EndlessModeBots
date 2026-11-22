@@ -230,14 +230,14 @@ function CreateRedBot() {
             SkinId: 10
         });
 
-if (!result || !result.success) {
-    return "Ошибка создания: " +
-        (result && result.error
-            ? result.error
-            : "Неизвестная ошибка");
-}
+        if (!result || !result.success) {
+            return "Ошибка создания: " +
+                (result && result.error
+                    ? result.error
+                    : "Неизвестная ошибка");
+        }
 
-return "Запрос на создание бота выполнен";
+        return "Запрос на создание бота выполнен";
 
     } catch (error) {
         return "Ошибка создания: " + String(error);
