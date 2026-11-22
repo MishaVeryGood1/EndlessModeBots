@@ -122,18 +122,25 @@ export function createBotManager(Bots) {
             }
         },
 
-        // // ==========================================
-// СЛЕЖЕНИЕ ЗА ИГРОКОМ ПО ID
-// ==========================================
+        // ==========================================
+        // СЛЕЖЕНИЕ ЗА ИГРОКОМ ПО ID
+        // ==========================================
 
-elapsedTimer.OnTimer.Add(function() {
-    UpdateElapsedClock();
+        LookAtPlayerById(Players, playerId) {
+            const targetPlayer = Players.GetByRoomId(playerId);
 
-    if (stateProp.Value === GameStateValue) {
-        BotManager.LookAtPlayerById(Players, 1);
-    }
-});
+            if (!targetPlayer || !targetPlayer.IsAlive) {
+                return;
+            }
 
+            const currentBots = bots.slice();
+
+            for (const bot of currentBots) {
+                if (!bot || !bot.Alive) continue;
+
+                bot.LookAt(targetPlayer.Position);
+            }
+        },
 
         // ==========================================
         // ПОВОРОТ ГОЛОВЫ К ИГРОКАМ
