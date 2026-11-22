@@ -53,7 +53,8 @@ BreackGraph.PlayerBlockBoost = true;
 Properties.GetContext().GameModeName.Value =
     "GameModes/Team Dead Match";
 
-TeamsBalancer.IsAutoBalance = true;
+// ОТКЛЮЧАЕМ АВТОБАЛАНСИРОВКУ КОМАНД
+TeamsBalancer.IsAutoBalance = false;
 
 Ui.GetContext().MainTimerId.Value = mainTimer.Id;
 
