@@ -217,15 +217,15 @@ export function createBotManager(Bots) {
                     newZ
                 );
 
-                // НОВОЕ НАПРАВЛЕНИЕ ДВИЖЕНИЯ
-const lookDirection = new room_lib.Vector3(
+                                // НОВОЕ НАПРАВЛЕНИЕ ДВИЖЕНИЯ
+                const lookDirection = new room_lib.Vector3(
                     dx / distance,
                     0,
                     dz / distance
                 );
 
-// УСТАНАВЛИВАЕМ ПОЗИЦИЮ И НАПРАВЛЕНИЕ БОТА
-bot.SetPositionAndDirection(newPosition, lookDirection);
+                // УСТАНАВЛИВАЕМ ПОЗИЦИЮ И НАПРАВЛЕНИЕ БОТА
+                bot.SetPositionAndDirection(newPosition, lookDirection);
 
 // Сохраняем направление взгляда
 bot.LookAt(nearestPlayer.Position);
