@@ -427,23 +427,28 @@ function UpdateElapsedClock() {
 }
 
 // ==========================================
-// СЛЕЖЕНИЕ И ПЕРЕМЕЩЕНИЕ БОТОВ К ИГРОКУ
+// ОБНОВЛЕНИЕ ИГРОВОГО ВРЕМЕНИ
 // ==========================================
 
 elapsedTimer.OnTimer.Add(function() {
     UpdateElapsedClock();
+});
 
-    if (stateProp.Value === GameStateValue) {
+ // ==========================================
+// ОТДЕЛЬНОЕ УПРАВЛЕНИЕ БОТАМИ
+// ==========================================
 
-        // БОТ СМОТРИТ НА ИГРОКА
-        BotManager.LookAtPlayerById(Players, 1);
+botFollowTimer.OnTimer.Add(function() {
+    if (stateProp.Value !== GameStateValue) return;
 
-        // БОТ ПОСТЕПЕННО ПРИБЛИЖАЕТСЯ К ИГРОКУ
-        const targetPlayer = Players.GetByRoomId(1);
+    // БОТ СМОТРИТ НА ИГРОКА
+    BotManager.LookAtPlayerById(Players, 1);
 
-        if (targetPlayer && targetPlayer.IsAlive) {
-            BotManager.MoveTowardPlayers([targetPlayer]);
-        }
+    // БОТ ПРИБЛИЖАЕТСЯ К ИГРОКУ
+    const targetPlayer = Players.GetByRoomId(1);
+
+    if (targetPlayer && targetPlayer.IsAlive) {
+        BotManager.MoveTowardPlayers([targetPlayer]);
     }
 });
 
