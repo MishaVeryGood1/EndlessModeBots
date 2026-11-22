@@ -126,21 +126,13 @@ export function createBotManager(Bots) {
 // СЛЕЖЕНИЕ ЗА ИГРОКОМ ПО ID
 // ==========================================
 
-LookAtPlayerById(Players, playerId) {
-    const targetPlayer = Players.GetByRoomId(playerId);
+elapsedTimer.OnTimer.Add(function() {
+    UpdateElapsedClock();
 
-    if (!targetPlayer || !targetPlayer.IsAlive) {
-        return;
+    if (stateProp.Value === GameStateValue) {
+        BotManager.LookAtPlayerById(Players, 1);
     }
-
-    const currentBots = bots.slice();
-
-    for (const bot of currentBots) {
-        if (!bot || !bot.Alive) continue;
-
-        bot.LookAt(targetPlayer.Position);
-    }
-},
+});
 
 
         // ==========================================
