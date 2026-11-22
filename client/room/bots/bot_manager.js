@@ -219,10 +219,10 @@ export function createBotManager(Bots) {
 
                 // НОВОЕ НАПРАВЛЕНИЕ ДВИЖЕНИЯ
 const lookDirection = new room_lib.Vector3(
-    dx / distance,
-    0,
-    dz / distance
-);
+                    dx / distance,
+                    0,
+                    dz / distance
+                );
 
 // УСТАНАВЛИВАЕМ ПОЗИЦИЮ И НАПРАВЛЕНИЕ БОТА
 bot.SetPositionAndDirection(newPosition, lookDirection);
