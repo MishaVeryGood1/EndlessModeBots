@@ -227,13 +227,8 @@ export function createBotManager(Bots) {
                 // УСТАНАВЛИВАЕМ ПОЗИЦИЮ И НАПРАВЛЕНИЕ БОТА
                 bot.SetPositionAndDirection(newPosition, lookDirection);
 
-// Сохраняем направление взгляда
-bot.LookAt(nearestPlayer.Position);
-
-                // Сохраняем направление взгляда
-                bot.LookAt(nearestPlayer.Position);
-            }
-        },
+                // УСТАНАВЛИВАЕМ ПОЗИЦИЮ И НАПРАВЛЕНИЕ БОТА
+                bot.SetPositionAndDirection(newPosition, lookDirection);
 
         // ==========================================
         // УДАЛЕНИЕ ОДНОГО БОТА
