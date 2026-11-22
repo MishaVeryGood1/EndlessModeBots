@@ -138,7 +138,14 @@ LookAtPlayerById(Players, playerId) {
     for (const bot of currentBots) {
         if (!bot || !bot.Alive) continue;
 
-        bot.LookAt(targetPlayer.Position);
+        // НАПРАВЛЯЕМ ВЗГЛЯД ЧУТЬ ВЫШЕ
+        const lookPoint = new room_lib.Vector3(
+            targetPlayer.Position.x,
+            targetPlayer.Position.y + 1.5,
+            targetPlayer.Position.z
+        );
+
+        bot.LookAt(lookPoint);
     }
 },
 
