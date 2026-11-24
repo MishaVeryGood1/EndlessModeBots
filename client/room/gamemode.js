@@ -445,15 +445,13 @@ elapsedTimer.OnTimer.Add(function() {
 botFollowTimer.OnTimer.Add(function() {
     if (stateProp.Value !== GameStateValue) return;
 
-    // БОТ СМОТРИТ НА ИГРОКА
-    BotManager.LookAtPlayerById(Players, 1);
+    // БОТ СМОТРИТ НА ИГРОКОВ СИНЕЙ КОМАНДЫ
+BotManager.LookAtPlayers(blueTeam.Players);
 
     // БОТ ПРИБЛИЖАЕТСЯ К ИГРОКУ
-    const targetPlayer = Players.GetByRoomId(1);
+    const targetPlayers = blueTeam.Players;
 
-    if (targetPlayer && targetPlayer.IsAlive) {
-        BotManager.MoveTowardPlayers([targetPlayer]);
-    }
+BotManager.MoveTowardPlayers(targetPlayers);
 });
 
 // СПАВН КОМАНД
