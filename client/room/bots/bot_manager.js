@@ -55,16 +55,19 @@ export function createBotManager(Bots) {
 
     if (Bots) {
         Bots.OnNewBot.Add(function(bot, botsService) {
-            if (!bot) return;
+    if (!bot) return;
 
-            const exists = bots.some(function(item) {
-                return item.Id === bot.Id;
-            });
+    // ВКЛЮЧАЕМ АТАКУ БОТА
+    bot.Attack = true;
 
-            if (!exists) {
-                bots.push(bot);
-            }
-        });
+    const exists = bots.some(function(item) {
+        return item.Id === bot.Id;
+    });
+
+    if (!exists) {
+        bots.push(bot);
+    }
+});
 
         // ==========================================
         // РЕГИСТРАЦИЯ УДАЛЕНИЯ БОТА
